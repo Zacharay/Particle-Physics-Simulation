@@ -1,10 +1,10 @@
-﻿#include <iostream>
-#include "glad/glad.h"
-#include "glfw3.h"
-
+﻿#include "Application.h"
 
 int main()
 {
-	glfwInit();
+	Application app;
+
+	app.Run();
+
 	return 0;
 }
