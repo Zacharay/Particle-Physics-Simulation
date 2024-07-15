@@ -2,15 +2,27 @@
 
 void Application::onUpdate()
 {
-	//process user input
+	float currentFrame = glfwGetTime();
+	float dt = currentFrame - this->lastFrame;
+
+	this->lastFrame = currentFrame;
+
+	this->physicsSolver->applyPhysics(dt);
+
 }
 
 void Application::onRender()
 {
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
+	for (auto ballObject : this->objects)
+	{
+		
+		this->ballRenderer->Draw(ballObject->getCurrentPosition(), ballObject->getRadius());
+		
+	}
 
-	this->ballRenderer->Draw(glm::vec2(0.0f,0.0f),20.0f);
+	
 
 	glfwSwapBuffers(this->window);
 	glfwPollEvents();
@@ -35,10 +47,20 @@ Application::Application()
 	glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	this->ballRenderer = new BallRenderer();
+
+	for (int i = 0; i < 10; i++)
+	{
+		
+		BallObject* obj = new BallObject(glm::vec2(20.0f+i*60,700));
+		this->objects.push_back(obj);
+	}
+
+	this->physicsSolver = new PhysicsSolver(this->objects);
 }
 
 void Application::Run()
 {
+	this->lastFrame = glfwGetTime();
 
 	while (!glfwWindowShouldClose(this->window))
 	{

@@ -14,3 +14,4 @@ link_directories(${CMAKE_SOURCE_DIR}/thirdParty/libs)
 
 file(COPY ${CMAKE_SOURCE_DIR}/shaders DESTINATION ${CMAKE_BINARY_DIR})
 target_link_libraries(CMakeTarget PRIVATE "${CMAKE_SOURCE_DIR}/thirdParty/libs/glfw3.lib"  opengl32.lib)
+

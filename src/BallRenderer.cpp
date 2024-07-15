@@ -1,7 +1,7 @@
 #include "BallRenderer.hpp"
 #include "glad/glad.h"
 #include <iostream>
-
+#include "Globals.hpp"
 
 BallRenderer::BallRenderer()
 {
@@ -34,14 +34,23 @@ BallRenderer::~BallRenderer()
 }
 void BallRenderer::Draw(glm::vec2 ballPosition, float radius)
 {
+	glm::mat4 model = glm::mat4(1.0f);
+
+	model = glm::translate(model, glm::vec3(ballPosition, 0.0f));
+	model = glm::scale(model, glm::vec3(radius));
+	
+	glm::mat4 projection = glm::ortho(0.0f, (float)WINDOW_WIDTH, 0.0f, (float)WINDOW_HEIGHT);
+
 	shader->useProgram();
+	shader->setMat4(model, "model");
+	shader->setMat4(projection, "projection");
 	glBindVertexArray(this->VAO);
 	glDrawElements(GL_TRIANGLES, this->indices.size(), GL_UNSIGNED_INT, 0);
 }
 void BallRenderer::InitializeVertices()
 {
 	float radius = 1.0f;
-	unsigned int vCount = 72;
+	unsigned int vCount = 36;
 
 	float angle = 360.0f / vCount;
 
