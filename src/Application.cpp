@@ -50,11 +50,14 @@ Application::Application()
 
 	this->ballRenderer = new BallRenderer();
 
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i <10; i++)
 	{
-		
-		BallObject* obj = new BallObject(glm::vec2(400.0f+i*20,400.0f));
-		this->objects.push_back(obj);
+		for (int y = 0; y < 10; y++)
+		{
+			BallObject* obj = new BallObject(glm::vec2(20.0f + i*30.0f, 20.0f+y*30.f));
+			this->objects.push_back(obj);
+		}
+
 	}
 
 	this->physicsSolver = new PhysicsSolver(this->objects);

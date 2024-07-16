@@ -4,11 +4,12 @@
 
 class BallObject {
 private:
-	glm::vec2 currentPosition;
-	glm::vec2 previousPosition;
+	
 	glm::vec2 acceleration;
 	const float radius = 20.0f;
 public:
+	glm::vec2 currentPosition;
+	glm::vec2 previousPosition;
 	BallObject();
 	BallObject(glm::vec2 position);
 	void updatePosition(float dt);

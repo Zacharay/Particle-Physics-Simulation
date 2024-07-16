@@ -4,7 +4,7 @@
 
 class PhysicsSolver {
 
-	glm::vec2 gravity = glm::vec2(0.0f, 0.0f);
+	glm::vec2 gravity = glm::vec2(0.0f, -500.0f);
 	std::vector<BallObject*>& gameObjects;
 	void applyConstrains();
 	void applyGravity();

@@ -16,7 +16,7 @@ BallObject::BallObject(glm::vec2 position)
 void BallObject::updatePosition(float dt)
 {
 	glm::vec2 velocity = this->currentPosition - this->previousPosition;
-	std::cout << acceleration.x << " " << acceleration.y << std::endl;
+	
 	this->previousPosition = this->currentPosition;
 
 	this->currentPosition = this->currentPosition + velocity + this->acceleration * dt * dt;

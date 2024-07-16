@@ -99,7 +99,24 @@ void PhysicsSolver::solveCollisions()
 }
 void PhysicsSolver::resolveCollision(BallObject& ballObj1, BallObject& ballObj2)
 {
-	//std::cout << "Balls collide";
+	glm::vec2 position1 = ballObj1.getCurrentPosition();
+	glm::vec2 position2 = ballObj2.getCurrentPosition();
+
+	glm::vec2 delta = position1 - position2;
+	
+	float minDist = ballObj1.getRadius() + ballObj2.getRadius();
+	float distance = glm::length(delta);
+
+
+	float overlap = (distance - minDist)*0.5f;
+
+	glm::vec2 displacement = delta * (overlap / distance);
+	
+	ballObj1.currentPosition -= displacement;
+	ballObj2.currentPosition += displacement;
+
+
+	
 }
 bool PhysicsSolver::doBallsCollide(BallObject & ballObj1, BallObject & ballObj2)
 {
