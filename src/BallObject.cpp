@@ -1,20 +1,22 @@
 #include "BallObject.hpp"
-
+#include <iostream>
 BallObject::BallObject()
 {
 	this->currentPosition = glm::vec2(400.0f, 400.0f);
 	this->previousPosition = glm::vec2(400.0f, 400.0f);
+	this->acceleration = glm::vec2(0.0f, 0.0f);
 }
 BallObject::BallObject(glm::vec2 position)
 {
 	this->currentPosition = position;
 	this->previousPosition = position;
+	this->acceleration = glm::vec2(0.0f, 0.0f);
 }
 
 void BallObject::updatePosition(float dt)
 {
 	glm::vec2 velocity = this->currentPosition - this->previousPosition;
-
+	std::cout << acceleration.x << " " << acceleration.y << std::endl;
 	this->previousPosition = this->currentPosition;
 
 	this->currentPosition = this->currentPosition + velocity + this->acceleration * dt * dt;

@@ -9,16 +9,18 @@ PhysicsSolver::PhysicsSolver(std::vector<BallObject*>& objects):gameObjects(obje
 
 void PhysicsSolver::applyPhysics(float dt)
 {
-	//float substeps = 8;
-	//float sub_dt = dt / substeps;
-	//std::cout << sub_dt << std::endl;
-	//for (int i = 0; i < substeps; i++)
-	//{
+
+
+	
+	
+	
+	
 			applyGravity();
 			applyConstrains();
+			solveCollisions();
 			updatePositions(dt);
 		
-	//}
+	
 
 }
 void PhysicsSolver::updatePositions(float dt)
@@ -75,9 +77,47 @@ void PhysicsSolver::applyConstrains()
 			ballObject->setPreviousPosition(glm::vec2(previousPosition.x, previousPosition.y + velocity.y));
 		}
 	}
+}
+void PhysicsSolver::solveCollisions()
+{
+	for (int i = 0; i < this->gameObjects.size(); i++)
+	{
+		for (int j = 0; j < this->gameObjects.size(); j++)
+		{
+			if (i == j)continue;
+
+			BallObject* obj1 = this->gameObjects[i];
+			BallObject* obj2 = this->gameObjects[j];
+			
+			if (this->doBallsCollide(*obj1, *obj2))
+			{
+				this->resolveCollision(*obj1, *obj2);
+			}
+
+		}
+	}
+}
+void PhysicsSolver::resolveCollision(BallObject& ballObj1, BallObject& ballObj2)
+{
+	//std::cout << "Balls collide";
+}
+bool PhysicsSolver::doBallsCollide(BallObject & ballObj1, BallObject & ballObj2)
+{
+	float radius1 = ballObj1.getRadius();
+	float radius2 = ballObj2.getRadius();
+
+	glm::vec2 position1 = ballObj1.getCurrentPosition();
+	glm::vec2 position2 = ballObj2.getCurrentPosition();
+
+
+	float centerDistance = (position1.x - position2.x) * (position1.x - position2.x) + (position1.y - position2.y) * (position1.y - position2.y);
+
+	if (centerDistance < (radius1 + radius2) * (radius1 + radius2))
+	{
+		return true;
+	}
 	
+	return false;
 	
 }
-
-
 

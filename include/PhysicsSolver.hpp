@@ -3,11 +3,15 @@
 #include <vector>
 
 class PhysicsSolver {
-	glm::vec2 gravity = glm::vec2(0.0f, -1000.0f);
+
+	glm::vec2 gravity = glm::vec2(0.0f, 0.0f);
 	std::vector<BallObject*>& gameObjects;
 	void applyConstrains();
 	void applyGravity();
 	void updatePositions(float dt);
+	void solveCollisions();
+	void resolveCollision(BallObject& ballObj1, BallObject& ballObj2);
+	bool doBallsCollide(BallObject& ballObj1, BallObject& ballObj2);
 public:
 	PhysicsSolver(std::vector<BallObject*>& objects);
 	void applyPhysics(float dt);

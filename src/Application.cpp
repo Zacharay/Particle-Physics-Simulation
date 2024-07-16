@@ -3,11 +3,12 @@
 void Application::onUpdate()
 {
 	float currentFrame = glfwGetTime();
-	float dt = currentFrame - this->lastFrame;
+	float deltaTime = currentFrame - lastFrame;
+	lastFrame = currentFrame;
 
-	this->lastFrame = currentFrame;
+	deltaTime = std::min(deltaTime, 0.005f);
 
-	this->physicsSolver->applyPhysics(dt);
+	this->physicsSolver->applyPhysics(deltaTime);
 
 }
 
@@ -17,15 +18,16 @@ void Application::onRender()
 	glClear(GL_COLOR_BUFFER_BIT);
 	for (auto ballObject : this->objects)
 	{
-		
+
+	
 		this->ballRenderer->Draw(ballObject->getCurrentPosition(), ballObject->getRadius());
 		
 	}
 
 	
-
 	glfwSwapBuffers(this->window);
 	glfwPollEvents();
+
 }
 
 Application::Application()
@@ -48,10 +50,10 @@ Application::Application()
 
 	this->ballRenderer = new BallRenderer();
 
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 2; i++)
 	{
 		
-		BallObject* obj = new BallObject(glm::vec2(20.0f+i*60,700));
+		BallObject* obj = new BallObject(glm::vec2(400.0f+i*20,400.0f));
 		this->objects.push_back(obj);
 	}
 
@@ -64,8 +66,10 @@ void Application::Run()
 
 	while (!glfwWindowShouldClose(this->window))
 	{
+		
 		this->onUpdate();
 		this->onRender();
+
 	}
 
 }
