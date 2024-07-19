@@ -6,7 +6,7 @@ class BallObject {
 private:
 	glm::vec3 ballColor;
 	glm::vec2 acceleration;
-	const float radius = 10.0f;
+	const float radius = 5.0f;
 public:
 	glm::vec2 currentPosition;
 	glm::vec2 previousPosition;

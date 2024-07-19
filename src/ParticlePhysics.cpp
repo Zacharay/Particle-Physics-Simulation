@@ -4,7 +4,6 @@ int main()
 {
 	Application app;
 
-	app.Run();
-
+	app.mainLoop();
 	return 0;
 }

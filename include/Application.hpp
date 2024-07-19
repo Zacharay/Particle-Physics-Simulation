@@ -5,24 +5,27 @@
 #include "Globals.hpp"
 #include "BallObject.hpp"
 #include "PhysicsSolver.hpp"
-
+#include "Window.hpp"
 #include <iostream>
 
 
-class Application {
+class Application : public Window{
 private:
-	float lastFrame;
 	BallRenderer *ballRenderer;
 	PhysicsSolver *physicsSolver;
 
-	GLFWwindow* window;
+
+	const float FIXED_SPAWN_RATE = 0.05f;
+	float accumulator = 0.0f;
+	float lastTime;
 
 	std::vector<BallObject*> objects;
-
-	void onUpdate();
-	void onRender();
 	void spawnObject();
+protected:
+
+	void onUpdate() override;
+	void onRender()override;
+	
 public:
 	Application();
-	void Run();
 };
