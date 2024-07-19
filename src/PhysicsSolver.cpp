@@ -10,11 +10,6 @@ PhysicsSolver::PhysicsSolver(std::vector<BallObject*>& objects):gameObjects(obje
 void PhysicsSolver::applyPhysics(float dt)
 {
 
-
-	
-	
-	
-	
 			applyGravity();
 			applyConstrains();
 			solveCollisions();
@@ -89,10 +84,8 @@ void PhysicsSolver::solveCollisions()
 			BallObject* obj1 = this->gameObjects[i];
 			BallObject* obj2 = this->gameObjects[j];
 			
-			if (this->doBallsCollide(*obj1, *obj2))
-			{
-				this->resolveCollision(*obj1, *obj2);
-			}
+
+			this->resolveCollision(*obj1, *obj2);
 
 		}
 	}
@@ -101,40 +94,23 @@ void PhysicsSolver::resolveCollision(BallObject& ballObj1, BallObject& ballObj2)
 {
 	glm::vec2 position1 = ballObj1.getCurrentPosition();
 	glm::vec2 position2 = ballObj2.getCurrentPosition();
+	glm::vec2 collisionAxis = position1 - position2;
 
-	glm::vec2 delta = position1 - position2;
+	float radiusSum = ballObj1.getRadius() + ballObj2.getRadius();
+	float centerDistance = glm::length(collisionAxis);
+
+	bool doBallsColide = centerDistance < radiusSum;
+
+	if (!doBallsColide)return;
+
+	glm::vec2 normalizedCollisionAxis = collisionAxis / centerDistance;
+	float halfOverlap = (centerDistance - radiusSum)*0.5f;
+
+	glm::vec2 displacement = halfOverlap * normalizedCollisionAxis;
 	
-	float minDist = ballObj1.getRadius() + ballObj2.getRadius();
-	float distance = glm::length(delta);
+	ballObj1.setCurrentPosition(position1 - displacement);
+	ballObj2.setCurrentPosition(position2 + displacement);
 
-
-	float overlap = (distance - minDist)*0.5f;
-
-	glm::vec2 displacement = delta * (overlap / distance);
-	
-	ballObj1.currentPosition -= displacement;
-	ballObj2.currentPosition += displacement;
-
-
-	
-}
-bool PhysicsSolver::doBallsCollide(BallObject & ballObj1, BallObject & ballObj2)
-{
-	float radius1 = ballObj1.getRadius();
-	float radius2 = ballObj2.getRadius();
-
-	glm::vec2 position1 = ballObj1.getCurrentPosition();
-	glm::vec2 position2 = ballObj2.getCurrentPosition();
-
-
-	float centerDistance = (position1.x - position2.x) * (position1.x - position2.x) + (position1.y - position2.y) * (position1.y - position2.y);
-
-	if (centerDistance < (radius1 + radius2) * (radius1 + radius2))
-	{
-		return true;
-	}
-	
-	return false;
 	
 }
 

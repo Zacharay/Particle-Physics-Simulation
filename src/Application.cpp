@@ -1,4 +1,7 @@
 #include "Application.hpp"
+#include <chrono>
+float accumulator = 0.0f;
+const float FIXED_SPAWN_RATE = 0.06f;
 
 void Application::onUpdate()
 {
@@ -6,7 +9,19 @@ void Application::onUpdate()
 	float deltaTime = currentFrame - lastFrame;
 	lastFrame = currentFrame;
 
-	deltaTime = std::min(deltaTime, 0.005f);
+	deltaTime = 1.0f / 144.0f;
+
+	//deltaTime = std::min(deltaTime, 0.005f);
+
+	accumulator += deltaTime;
+
+	if (accumulator > FIXED_SPAWN_RATE)
+	{
+		accumulator -= FIXED_SPAWN_RATE;
+		this->spawnObject();
+	}
+	
+
 
 	this->physicsSolver->applyPhysics(deltaTime);
 
@@ -20,7 +35,7 @@ void Application::onRender()
 	{
 
 	
-		this->ballRenderer->Draw(ballObject->getCurrentPosition(), ballObject->getRadius());
+		this->ballRenderer->Draw(ballObject->getCurrentPosition(),ballObject->getBallColor(), ballObject->getRadius());
 		
 	}
 
@@ -29,7 +44,15 @@ void Application::onRender()
 	glfwPollEvents();
 
 }
+void Application::spawnObject()
+{
+	glm::vec2 pos = glm::vec2(100.0f, 700.0f);
+	glm::vec3 color = glm::vec3(0.2, 0.3f, 0.8f);
 
+	BallObject* obj = new BallObject(pos, color);
+	obj->setPreviousPosition(glm::vec2(97.0f, 701.0f));
+	this->objects.push_back(obj);
+}
 Application::Application()
 {
 	glfwInit();
@@ -38,7 +61,7 @@ Application::Application()
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 
-	this->window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Particle Physics Simulatio", NULL, NULL);
+	this->window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Particle Physics Simulation", NULL, NULL);
 	glfwMakeContextCurrent(this->window);
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
@@ -50,16 +73,6 @@ Application::Application()
 
 	this->ballRenderer = new BallRenderer();
 
-	for (int i = 0; i <10; i++)
-	{
-		for (int y = 0; y < 10; y++)
-		{
-			BallObject* obj = new BallObject(glm::vec2(20.0f + i*30.0f, 20.0f+y*30.f));
-			this->objects.push_back(obj);
-		}
-
-	}
-
 	this->physicsSolver = new PhysicsSolver(this->objects);
 }
 
@@ -67,10 +80,43 @@ void Application::Run()
 {
 	this->lastFrame = glfwGetTime();
 
+	const double updateInterval = 1.0 / 144.0;  // Update 144 times per second
+
+	auto previousUpdateTime = std::chrono::high_resolution_clock::now();
+	double accumulator = 0.0;
+
+	// Variables for FPS calculation
+	double fpsPreviousTime = glfwGetTime();
+	int frameCount = 0;
 	while (!glfwWindowShouldClose(this->window))
 	{
-		
-		this->onUpdate();
+
+		auto currentTime = std::chrono::high_resolution_clock::now();
+		std::chrono::duration<double> elapsedTime = currentTime - previousUpdateTime;
+		previousUpdateTime = currentTime;
+		accumulator += elapsedTime.count();
+
+
+		// Update loop
+		while (accumulator >= updateInterval) {
+			// FPS calculation
+			frameCount++;
+			double fpsCurrentTime = glfwGetTime();
+			if (fpsCurrentTime - fpsPreviousTime >= 1.0) {
+				// Display the FPS
+				std::cout << "FPS: " << frameCount << std::endl;
+
+				// Reset the counters
+				frameCount = 0;
+				fpsPreviousTime = fpsCurrentTime;
+			}
+
+
+
+			this->onUpdate();
+			accumulator -= updateInterval;
+		}
+
 		this->onRender();
 
 	}

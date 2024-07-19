@@ -32,7 +32,7 @@ BallRenderer::~BallRenderer()
 	glDeleteVertexArrays(1, &this->VAO);
 	glDeleteBuffers(1, &this->VBO);
 }
-void BallRenderer::Draw(glm::vec2 ballPosition, float radius)
+void BallRenderer::Draw(glm::vec2 ballPosition,glm::vec3 ballColor, float radius)
 {
 	glm::mat4 model = glm::mat4(1.0f);
 
@@ -44,6 +44,7 @@ void BallRenderer::Draw(glm::vec2 ballPosition, float radius)
 	shader->useProgram();
 	shader->setMat4(model, "model");
 	shader->setMat4(projection, "projection");
+	shader->setVec3(ballColor, "uniColor");
 	glBindVertexArray(this->VAO);
 	glDrawElements(GL_TRIANGLES, this->indices.size(), GL_UNSIGNED_INT, 0);
 }

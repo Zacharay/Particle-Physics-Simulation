@@ -14,6 +14,6 @@ private:
 public:
 	BallRenderer();
 	~BallRenderer();
-	void Draw(glm::vec2 ballPosition, float radius);
+	void Draw(glm::vec2 ballPosition,glm::vec3 ballColor, float radius);
 	void InitializeVertices();
 };
