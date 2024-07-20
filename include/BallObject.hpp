@@ -6,12 +6,12 @@ class BallObject {
 private:
 	glm::vec3 ballColor;
 	glm::vec2 acceleration;
-	const float radius = 5.0f;
+	const float radius;
 public:
 	glm::vec2 currentPosition;
 	glm::vec2 previousPosition;
 	BallObject();
-	BallObject(glm::vec2 position, glm::vec3 color);
+	BallObject(glm::vec2 position, glm::vec3 color,float radius);
 	void updatePosition(float dt);
 	void accelerate(glm::vec2 acc);
 	float getRadius()const;

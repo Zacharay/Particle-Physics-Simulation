@@ -9,11 +9,13 @@ PhysicsSolver::PhysicsSolver(std::vector<BallObject*>& objects):gameObjects(obje
 
 void PhysicsSolver::applyPhysics(float dt)
 {
+	
+		applyGravity();
+		applyConstrains();
+		solveCollisions();
+		updatePositions(dt);
+	
 
-			applyGravity();
-			applyConstrains();
-			solveCollisions();
-			updatePositions(dt);
 		
 	
 

@@ -1,6 +1,6 @@
 #include "BallObject.hpp"
 #include <iostream>
-BallObject::BallObject()
+BallObject::BallObject():radius(10.0f)
 {
 	this->currentPosition = glm::vec2(400.0f, 400.0f);
 	this->previousPosition = glm::vec2(400.0f, 400.0f);
@@ -8,7 +8,7 @@ BallObject::BallObject()
 	this->ballColor = glm::vec3(1.0f, 1.0f, 1.0f);
 
 }
-BallObject::BallObject(glm::vec2 position,glm::vec3 color)
+BallObject::BallObject(glm::vec2 position,glm::vec3 color,float radius):radius(radius)
 {
 	this->currentPosition = position;
 	this->previousPosition = position;

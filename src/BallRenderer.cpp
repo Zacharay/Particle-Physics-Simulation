@@ -24,7 +24,7 @@ BallRenderer::BallRenderer()
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
 	glEnableVertexAttribArray(0);
 	
-	shader = new Shader("shaders/ballVertexShader.vs", "shaders/ballFragmentShader.fs");
+	shader = new Shader("res/shaders/ballVertexShader.vs", "res/shaders/ballFragmentShader.fs");
 
 }
 BallRenderer::~BallRenderer()

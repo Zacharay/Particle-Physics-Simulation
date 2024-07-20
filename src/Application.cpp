@@ -1,11 +1,11 @@
 #include "Application.hpp"
-#include <chrono>
 
 Application::Application() :Window(WINDOW_WIDTH, WINDOW_HEIGHT, "Particle Physics Simulation")
 {
 	
 	this->ballRenderer = new BallRenderer();
 	this->physicsSolver = new PhysicsSolver(this->objects);
+	this->textRenderer = new TextRenderer();
 	this->lastTime = glfwGetTime();
 }
 
@@ -20,15 +20,15 @@ void Application::onUpdate()
 	deltaTime = std::min(1.0f / FRAMES_PER_SECOND, deltaTime);
 	this->accumulator += deltaTime;
 
-	if (this->accumulator > this->FIXED_SPAWN_RATE)
+	if (this->accumulator > this->FIXED_SPAWN_RATE && this->numOfObjects < MAX_OBJECTS)
 	{
 		this->accumulator -= this->FIXED_SPAWN_RATE;
-
+		this->numOfObjects++;
 		this->spawnObject();
 	}
 	
 
-
+	
 	this->physicsSolver->applyPhysics(deltaTime);
 
 }
@@ -42,17 +42,36 @@ void Application::onRender()
 		this->ballRenderer->Draw(ballObject->getCurrentPosition(),ballObject->getBallColor(), ballObject->getRadius());
 	}
 
-	
+	this->textRenderer->DrawText("22", 5, 5);
 
 
 }
 void Application::spawnObject()
 {
-	glm::vec2 pos = glm::vec2(100.0f, 700.0f);
-	glm::vec3 color = glm::vec3(0.2, 0.3f, 0.8f);
+	std::random_device rd;
+	unsigned int seed = rd();
+	std::default_random_engine engine(seed);
+	std::uniform_int_distribution<int> numberDistribution(1, 3);
+	glm::vec3 color;
+	if (numOfObjects % 2 == 0)
+		color = glm::vec3(0, 0, 1);
+	else if (numOfObjects % 3 == 0)
+		color = glm::vec3(0, 1, 0);
+	else
+		color = glm::vec3(1, 0, 0);
 
-	BallObject* obj = new BallObject(pos, color);
-	obj->setPreviousPosition(glm::vec2(96.0f, 701.5f));
+
+	const float radius = 10.0f;
+	float initalXPos = 2 * radius;
+	float initalYPos = WINDOW_HEIGHT - 2 * radius;
+
+	glm::vec2 spawnerPos = glm::vec2(initalXPos, initalYPos);
+
+	float initalXOffset = -4.0f;
+	float initalYOffset = 1.5f;
+
+	BallObject* obj = new BallObject(spawnerPos, color, radius);
+	obj->setPreviousPosition(glm::vec2(initalXPos + initalXOffset, initalYPos + initalYOffset));
 	this->objects.push_back(obj);
 }
 
