@@ -46,6 +46,9 @@ void Application::onRender()
 	std::string objectStr = "Objects: " + std::to_string(this->numOfObjects);
 	this->textRenderer->DrawText(objectStr,600, 760);
 
+	unsigned int collsionChecks = this->physicsSolver->getCollisionChecks();
+	std::string collisionStr = "Checks:" + std::to_string(collsionChecks);
+	this->textRenderer->DrawText(collisionStr, 600, 730);
 
 
 }

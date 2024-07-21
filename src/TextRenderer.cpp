@@ -33,7 +33,17 @@ TextRenderer::TextRenderer()
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	stbi_image_free(data);
-	
+
+	glGenVertexArrays(1, &this->VAO);
+	glBindVertexArray(this->VAO);
+
+
+	glGenBuffers(1, &this->VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertice), (void*)offsetof(Vertice, xPos));
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertice), (void*)offsetof(Vertice, texturePosX));
+	glEnableVertexAttribArray(1);
 }
 void TextRenderer::LoadCharacterData()
 {
@@ -159,28 +169,26 @@ void TextRenderer::DrawText(std::string str, unsigned int xPos, unsigned int yPo
 
 	
 
-	glGenVertexArrays(1, &this->VAO);
 	glBindVertexArray(this->VAO);
-
-
-	glGenBuffers(1, &this->VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
+	glBindBuffer(GL_ARRAY_BUFFER,this->VBO);
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertice), vertices.data(), GL_DYNAMIC_DRAW);
 
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertice), (void*)offsetof(Vertice, xPos));
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertice), (void*)offsetof(Vertice, texturePosX));
-	glEnableVertexAttribArray(1);
+
 
 	glBindTexture(GL_TEXTURE_2D, this->textureID);
 	glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(WINDOW_WIDTH), 0.0f, static_cast<float>(WINDOW_HEIGHT));
 	this->shader->useProgram();
 	this->shader->setMat4(projection, "projection");
 
+	
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	
 
 }
 

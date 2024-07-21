@@ -1,9 +1,13 @@
 #include "PhysicsSolver.hpp"
 #include "Globals.hpp"
+#include "UniformGrid.hpp"
 #include <iostream>
 PhysicsSolver::PhysicsSolver(std::vector<BallObject*>& objects):gameObjects(objects)
 {
+	UniformGrid* grid = new UniformGrid();
 
+	grid->addItem(450, 220, 1);
+	grid->addItem(620, 500, 1);
 }
 
 
@@ -19,6 +23,10 @@ void PhysicsSolver::applyPhysics(float dt)
 		
 	
 
+}
+unsigned int PhysicsSolver::getCollisionChecks()
+{
+	return this->collisionChecks;
 }
 void PhysicsSolver::updatePositions(float dt)
 {
@@ -77,6 +85,7 @@ void PhysicsSolver::applyConstrains()
 }
 void PhysicsSolver::solveCollisions()
 {
+	unsigned int currentCollisions = 0;
 	for (int i = 0; i < this->gameObjects.size(); i++)
 	{
 		for (int j = 0; j < this->gameObjects.size(); j++)
@@ -86,11 +95,12 @@ void PhysicsSolver::solveCollisions()
 			BallObject* obj1 = this->gameObjects[i];
 			BallObject* obj2 = this->gameObjects[j];
 			
-
+			currentCollisions++;
 			this->resolveCollision(*obj1, *obj2);
 
 		}
 	}
+	this->collisionChecks = currentCollisions;
 }
 void PhysicsSolver::resolveCollision(BallObject& ballObj1, BallObject& ballObj2)
 {

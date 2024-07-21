@@ -3,7 +3,7 @@
 #include <vector>
 
 class PhysicsSolver {
-
+	unsigned int collisionChecks = 0;
 	glm::vec2 gravity = glm::vec2(0.0f, -500.0f);
 	std::vector<BallObject*>& gameObjects;
 	void applyConstrains();
@@ -14,6 +14,6 @@ class PhysicsSolver {
 public:
 	PhysicsSolver(std::vector<BallObject*>& objects);
 	void applyPhysics(float dt);
-
+	unsigned int getCollisionChecks();
 };
 
