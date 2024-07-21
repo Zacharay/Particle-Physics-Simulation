@@ -27,12 +27,12 @@ Window::Window(unsigned int width, unsigned int height, const char* windowName)
 }
 void Window::mainLoop()
 {
-	const double updateInterval = 1.0 / FRAMES_PER_SECOND;  // Update 144 times per second
+	const double updateInterval = 1.0 / FRAMES_PER_SECOND;  
 	auto previousUpdateTime = std::chrono::high_resolution_clock::now();
 	double accumulator = 0.0;
 
 	double fpsPreviousTime = glfwGetTime();
-	int frameCount = 0;
+	this->frameCount = 0;
 	while (!glfwWindowShouldClose(this->window))
 	{
 		auto currentTime = std::chrono::high_resolution_clock::now();
@@ -42,14 +42,10 @@ void Window::mainLoop()
 
 		while (accumulator >= updateInterval) {
 			// FPS calculation
-			frameCount++;
+			this->frameCount++;
 			double fpsCurrentTime = glfwGetTime();
 			if (fpsCurrentTime - fpsPreviousTime >= 1.0) {
-				// Display the FPS
-				std::cout << "FPS: " << frameCount << std::endl;
-
-				// Reset the counters
-				frameCount = 0;
+				this->frameCount = 0;
 				fpsPreviousTime = fpsCurrentTime;
 			}
 
@@ -62,4 +58,8 @@ void Window::mainLoop()
 		glfwSwapBuffers(this->window);
 		glfwPollEvents();
 	}
+}
+unsigned int Window::getCurrentFrames() const
+{
+	return this->frameCount;
 }

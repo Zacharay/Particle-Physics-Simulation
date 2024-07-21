@@ -1,4 +1,5 @@
 #include "Application.hpp"
+#include <math.h>
 
 Application::Application() :Window(WINDOW_WIDTH, WINDOW_HEIGHT, "Particle Physics Simulation")
 {
@@ -42,7 +43,9 @@ void Application::onRender()
 		this->ballRenderer->Draw(ballObject->getCurrentPosition(),ballObject->getBallColor(), ballObject->getRadius());
 	}
 
-	this->textRenderer->DrawText("22", 5, 5);
+	std::string objectStr = "Objects: " + std::to_string(this->numOfObjects);
+	this->textRenderer->DrawText(objectStr,600, 760);
+
 
 
 }
@@ -61,9 +64,9 @@ void Application::spawnObject()
 		color = glm::vec3(1, 0, 0);
 
 
-	const float radius = 10.0f;
-	float initalXPos = 2 * radius;
-	float initalYPos = WINDOW_HEIGHT - 2 * radius;
+	const float radius = 5.0f;
+	float initalXPos = 6 * radius;
+	float initalYPos = WINDOW_HEIGHT - 6 * radius;
 
 	glm::vec2 spawnerPos = glm::vec2(initalXPos, initalYPos);
 

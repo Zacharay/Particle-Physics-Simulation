@@ -24,10 +24,10 @@ TextRenderer::TextRenderer()
 	glGenTextures(1, &this->textureID);
 	glBindTexture(GL_TEXTURE_2D, this->textureID);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, data);
 	
 	glGenerateMipmap(GL_TEXTURE_2D);
@@ -114,24 +114,46 @@ void TextRenderer::LoadCharacterData()
 void TextRenderer::DrawText(std::string str, unsigned int xPos, unsigned int yPos)
 {
 
-	float chHeight = 32;
+	constexpr float chHeight = 32;
+	constexpr float textureSize = 512.0f;
+
 
 	std::vector<Vertice> vertices;
 	unsigned int x = xPos;
 	unsigned int y = yPos;
+
+	
+
+
 	for (char c : str)
 	{
 		Character ch = this->Characters[c];
-		//todo texture mapping
-		vertices.emplace_back(x,y,0,0); //left bottom
-		vertices.emplace_back(x+ch.width,y,0,0); // right bottom
-		vertices.emplace_back(x + ch.width,y+ chHeight,0,0); // top left
 
-		vertices.emplace_back(x, y, 0, 0); // left bottom
-		vertices.emplace_back(x + ch.width, y+ chHeight, 0, 0); //top left
-		vertices.emplace_back(x, y + chHeight, 0, 0); // top right
+		float textureX = ch.textureCoordinates.x;
+		float textureY = ch.textureCoordinates.y;
+		float textureWidth = ch.width;
+		float textureHeight = 32.0f;
 
+
+
+		float left = textureX / textureSize; //left
+		float top = textureY / textureSize; //top
+		float right = (textureX + textureWidth) / textureSize; //right
+		float bottom = (textureY + textureHeight) / textureSize; //bottom
+		x += ch.xOffset;
+		
+
+		vertices.emplace_back(x,					y,								left, bottom);                             // Left bottom
+		vertices.emplace_back(x + textureWidth,		y,								right, bottom);                  // Right bottom
+		vertices.emplace_back(x + textureWidth,		y + textureHeight,				right, top);       // Right top
+
+		vertices.emplace_back(x,					y,								left, bottom);                             // Left bottom
+		vertices.emplace_back(x + textureWidth,		y + textureHeight,				right, top);       // Right top
+		vertices.emplace_back(x,					y + textureHeight,				left, top);                  // Left top
+		
+		x -= ch.xOffset;
 		x += ch.xAdvance;
+		
 	}
 
 
@@ -150,11 +172,14 @@ void TextRenderer::DrawText(std::string str, unsigned int xPos, unsigned int yPo
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertice), (void*)offsetof(Vertice, texturePosX));
 	glEnableVertexAttribArray(1);
 
-
-	//glBindTexture(GL_TEXTURE_2D, this->textureID);
+	glBindTexture(GL_TEXTURE_2D, this->textureID);
 	glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(WINDOW_WIDTH), 0.0f, static_cast<float>(WINDOW_HEIGHT));
 	this->shader->useProgram();
 	this->shader->setMat4(projection, "projection");
+
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDrawArrays(GL_TRIANGLES, 0, vertices.size());
 
 }
