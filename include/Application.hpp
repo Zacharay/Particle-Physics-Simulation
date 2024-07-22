@@ -17,7 +17,7 @@ private:
 	PhysicsSolver *physicsSolver;
 	TextRenderer* textRenderer;
 
-	const float FIXED_SPAWN_RATE = 0.05f;
+	const float FIXED_SPAWN_RATE = 0.00f;
 	float accumulator = 0.0f;
 	float lastTime;
 	unsigned int numOfObjects = 0;

@@ -13,8 +13,10 @@ class UniformGrid {
 	unsigned int getCellID(unsigned int row, unsigned int col);
 public:
 
-	UniformGrid();
+	UniformGrid(float cellSize);
 	void clearGrid();
-	void addItem(float posX,float posY,unsigned int objID);
-	std::vector<unsigned int> getNeighbors();
+	void addItem(float posX, float posY, unsigned int objID);
+	std::vector<unsigned int>  getNeighbours(unsigned int cellID);
+	std::vector<unsigned int> getCellItems(unsigned int cellID);
+	unsigned int getNumOfCells()const;
 };

@@ -1,13 +1,20 @@
 #include "PhysicsSolver.hpp"
-#include "Globals.hpp"
-#include "UniformGrid.hpp"
+
 #include <iostream>
 PhysicsSolver::PhysicsSolver(std::vector<BallObject*>& objects):gameObjects(objects)
 {
-	UniformGrid* grid = new UniformGrid();
+	this->grid = new UniformGrid(40.0f);
+	
+	
 
-	grid->addItem(450, 220, 1);
-	grid->addItem(620, 500, 1);
+	
+	for (int i = 0; i < this->gameObjects.size(); i++)
+	{
+		glm::vec2 ballPos = this->gameObjects[i]->getCurrentPosition();
+
+		this->grid->addItem(ballPos.x, ballPos.y, i);
+	}
+
 }
 
 
@@ -16,12 +23,11 @@ void PhysicsSolver::applyPhysics(float dt)
 	
 		applyGravity();
 		applyConstrains();
-		solveCollisions();
-		updatePositions(dt);
-	
-
 		
-	
+		
+		solveCollisions();
+		grid->clearGrid();
+		updatePositions(dt);
 
 }
 unsigned int PhysicsSolver::getCollisionChecks()
@@ -30,12 +36,15 @@ unsigned int PhysicsSolver::getCollisionChecks()
 }
 void PhysicsSolver::updatePositions(float dt)
 {
-
-	for (auto gameObject : this->gameObjects)
+	for (int i = 0; i < this->gameObjects.size(); i++)
 	{
-		gameObject->updatePosition(dt);
+		BallObject* obj = this->gameObjects[i];
 
+		obj->updatePosition(dt);
+
+		
 	}
+
 }
 void PhysicsSolver::applyGravity()
 {
@@ -49,8 +58,9 @@ void PhysicsSolver::applyGravity()
 }
 void PhysicsSolver::applyConstrains()
 {
-	for (auto ballObject : this->gameObjects)
+	for (int i=0;i< this->gameObjects.size();i++)
 	{
+		BallObject *ballObject = this->gameObjects[i];
 		float radius = ballObject->getRadius();
 		glm::vec2 currentPosition = ballObject->getCurrentPosition();
 		glm::vec2 previousPosition = ballObject->getPreviousPosition();
@@ -81,11 +91,54 @@ void PhysicsSolver::applyConstrains()
 			ballObject->setCurrentPosition(glm::vec2(currentPosition.x, WINDOW_HEIGHT - radius));
 			ballObject->setPreviousPosition(glm::vec2(previousPosition.x, previousPosition.y + velocity.y));
 		}
+
+
+		glm::vec2 currentPos = ballObject->getCurrentPosition();
+		grid->addItem(currentPos.x, currentPos.y, i);
 	}
 }
 void PhysicsSolver::solveCollisions()
 {
 	unsigned int currentCollisions = 0;
+	for (int cellID = 0; cellID < grid->getNumOfCells(); cellID++)
+	{
+		std::vector<unsigned int> currentCellObjects = grid->getCellItems(cellID);
+		std::vector<unsigned int> neighboursObjects = grid->getNeighbours(cellID);
+		
+		for (int i = 0; i < currentCellObjects.size(); i++)
+		{
+			unsigned int id1 = currentCellObjects[i];
+			BallObject* obj1 = this->gameObjects[id1];
+			for (int j = 0; j < currentCellObjects.size(); j++)
+			{
+				if (i == j)continue;
+
+				
+				unsigned int id2 = currentCellObjects[j];
+				
+				
+				BallObject* obj2 = this->gameObjects[id2];
+				currentCollisions++;
+				resolveCollision(*obj1, *obj2);
+			}
+			for (int j = 0; j < neighboursObjects.size(); j++)
+			{
+
+				unsigned int id2 = neighboursObjects[j];
+
+
+				BallObject* obj2 = this->gameObjects[id2];
+				currentCollisions++;
+				resolveCollision(*obj1, *obj2);
+			}
+		}
+		
+
+	}
+
+
+
+	/*
 	for (int i = 0; i < this->gameObjects.size(); i++)
 	{
 		for (int j = 0; j < this->gameObjects.size(); j++)
@@ -99,8 +152,9 @@ void PhysicsSolver::solveCollisions()
 			this->resolveCollision(*obj1, *obj2);
 
 		}
-	}
+	}*/
 	this->collisionChecks = currentCollisions;
+	
 }
 void PhysicsSolver::resolveCollision(BallObject& ballObj1, BallObject& ballObj2)
 {

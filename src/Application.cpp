@@ -67,7 +67,7 @@ void Application::spawnObject()
 		color = glm::vec3(1, 0, 0);
 
 
-	const float radius = 5.0f;
+	const float radius = 10.0f;
 	float initalXPos = 6 * radius;
 	float initalYPos = WINDOW_HEIGHT - 6 * radius;
 
