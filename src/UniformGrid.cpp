@@ -1,9 +1,9 @@
 #include "UniformGrid.hpp"
 #include "UniformGrid.hpp"
 #include <iostream>
-unsigned int UniformGrid::getCellID(unsigned int row, unsigned int col)
+int UniformGrid::getCellID(unsigned int row, unsigned int col)
 {
-	return this->numCols * row  + col;
+	return this->numOfCols * row  + col;
 }
 
 
@@ -11,10 +11,12 @@ UniformGrid::UniformGrid(float cellSize)
 {
 
 	this->cellSize = cellSize;
-	this->numRows = WINDOW_HEIGHT / cellSize;
-	this->numCols = WINDOW_WIDTH / cellSize;
-	this->numOfCells = numRows * numCols;
-	cells.resize(numOfCells);
+	this->numOfCols = static_cast<int>(WINDOW_WIDTH / cellSize);
+	this->numOfRows = this->numOfCols;
+	this->numOfCells = this->numOfCols * this->numOfCols;
+
+
+	this->cells.resize(this->numOfCells);
 	
 	this->clearGrid();
 }
@@ -22,9 +24,9 @@ UniformGrid::UniformGrid(float cellSize)
 void UniformGrid::clearGrid()
 {
 
-	for (std::vector<unsigned int>& cell : cells)
+	for (GridCell &cell : this->cells)
 	{
-		cell.clear();
+		cell.objects.clear();
 	}
 
 }
@@ -32,18 +34,16 @@ void UniformGrid::clearGrid()
 void UniformGrid::addItem(float posX, float posY, unsigned int objID)
 {
 	unsigned int col = static_cast<unsigned int>(posX / this->cellSize);
-	unsigned int row = this->numRows-1-static_cast<unsigned int>(posY / this->cellSize);
-
-	
+	unsigned int row = this->numOfRows-1-static_cast<unsigned int>(posY / this->cellSize);
 
 	unsigned int cellID = this->getCellID(row, col);
 
-	this->cells[cellID].push_back(objID);
+	this->cells[cellID].objects.push_back(objID);
 }
 
-std::vector<unsigned int> UniformGrid::getCellItems(unsigned int cellID)
+std::vector<unsigned int> UniformGrid::getCellItems(unsigned int cellID)const 
 {
-	return this->cells[cellID];
+	return this->cells[cellID].objects;
 }
 
 unsigned int UniformGrid::getNumOfCells() const
@@ -51,14 +51,14 @@ unsigned int UniformGrid::getNumOfCells() const
 	return this->numOfCells;
 }
 
-std::vector<unsigned int> UniformGrid::getNeighbours(unsigned int cellID)
+void UniformGrid::getNeighbours(unsigned int cellID,std::vector<unsigned int> &nbr)const
 {
 	
 	
-	bool isLeftMostCell = cellID % this->numCols == 0;
-	bool isRightMostCell = (cellID+1) % this->numCols == 0;
-	bool isTopMostCell = cellID < this->numCols;
-	bool isBottomMostCell = this->numCols*(this->numRows-1) <= cellID;
+	bool isLeftMostCell = cellID % this->numOfCols == 0;
+	bool isRightMostCell = (cellID+1) % this->numOfCols == 0;
+	bool isTopMostCell = cellID < this->numOfCols;
+	bool isBottomMostCell = this->numOfCols *(this->numOfCols -1) <= cellID;
 	
 	
 
@@ -66,31 +66,31 @@ std::vector<unsigned int> UniformGrid::getNeighbours(unsigned int cellID)
 
 	if (!isTopMostCell)
 	{
-		moveDirections.push_back(-this->numCols);
+		moveDirections.push_back(-this->numOfCols);
 
 		//left diagonal
 		if (!isLeftMostCell)
 		{
-			moveDirections.push_back(-(this->numCols+1));
+			moveDirections.push_back(-(this->numOfCols +1));
 		}
 		//right diagonal
 		if (!isRightMostCell)
 		{
-			moveDirections.push_back(-(this->numCols - 1));
+			moveDirections.push_back(-(this->numOfCols - 1));
 		}
 	}
 	if (!isBottomMostCell)
 	{
-		moveDirections.push_back(this->numCols);
+		moveDirections.push_back(this->numOfCols);
 		//left diagonal
 		if (!isLeftMostCell)
 		{
-			moveDirections.push_back((this->numCols - 1));
+			moveDirections.push_back((this->numOfCols - 1));
 		}
 		//right diagonal
 		if (!isRightMostCell)
 		{
-			moveDirections.push_back((this->numCols + 1));
+			moveDirections.push_back((this->numOfCols + 1));
 		}
 	}
 
@@ -101,16 +101,14 @@ std::vector<unsigned int> UniformGrid::getNeighbours(unsigned int cellID)
 		moveDirections.push_back(1);
 	}
 
-	std::vector<unsigned int>nbr;
+
 	for (auto direction : moveDirections)
 	{
 		int newCellID = cellID + direction;
 
-		for (auto elementID : this->cells[newCellID])
+		for (auto elementID : this->cells[newCellID].objects)
 		{
 			nbr.push_back(elementID);
 		}
 	}
-
-	return nbr;
 }

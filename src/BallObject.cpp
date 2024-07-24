@@ -20,11 +20,13 @@ BallObject::BallObject(glm::vec2 position,glm::vec3 color,float radius):radius(r
 
 void BallObject::updatePosition(float dt)
 {
+	
+
 	glm::vec2 velocity = this->currentPosition - this->previousPosition;
 	
 	this->previousPosition = this->currentPosition;
 
-	this->currentPosition = this->currentPosition + velocity + this->acceleration * dt * dt;
+	this->currentPosition = this->currentPosition + velocity + this->acceleration * (dt * dt);
 
 	this->acceleration = glm::vec2(0.0f, 0.0f);
 }

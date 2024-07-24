@@ -17,9 +17,9 @@ private:
 	PhysicsSolver *physicsSolver;
 	TextRenderer* textRenderer;
 
-	const float FIXED_SPAWN_RATE = 0.00f;
+	const float FIXED_SPAWN_RATE = 0.02f;
 	float accumulator = 0.0f;
-	float lastTime;
+	double lastTime;
 	unsigned int numOfObjects = 0;
 
 	std::vector<BallObject*> objects;

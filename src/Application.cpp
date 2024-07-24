@@ -12,13 +12,13 @@ Application::Application() :Window(WINDOW_WIDTH, WINDOW_HEIGHT, "Particle Physic
 
 void Application::onUpdate()
 {
-	float currentTime = glfwGetTime();
+	double currentTime = glfwGetTime();
 
-	float deltaTime = currentTime - this->lastTime;
+	double deltaTime = currentTime - this->lastTime;
 
 	this->lastTime = currentTime;
 
-	deltaTime = std::min(1.0f / FRAMES_PER_SECOND, deltaTime);
+	deltaTime = std::min(static_cast<double>(1.0f / FRAMES_PER_SECOND), deltaTime);
 	this->accumulator += deltaTime;
 
 	if (this->accumulator > this->FIXED_SPAWN_RATE && this->numOfObjects < MAX_OBJECTS)
@@ -54,10 +54,6 @@ void Application::onRender()
 }
 void Application::spawnObject()
 {
-	std::random_device rd;
-	unsigned int seed = rd();
-	std::default_random_engine engine(seed);
-	std::uniform_int_distribution<int> numberDistribution(1, 3);
 	glm::vec3 color;
 	if (numOfObjects % 2 == 0)
 		color = glm::vec3(0, 0, 1);
@@ -67,7 +63,7 @@ void Application::spawnObject()
 		color = glm::vec3(1, 0, 0);
 
 
-	const float radius = 10.0f;
+	const float radius = 5.0f;
 	float initalXPos = 6 * radius;
 	float initalYPos = WINDOW_HEIGHT - 6 * radius;
 

@@ -1,22 +1,28 @@
 #pragma once
 #include <vector>
 #include "Globals.hpp"
+
+struct GridCell {
+	std::vector<unsigned int>objects;
+};
+
 class UniformGrid {
-	unsigned int cellSize;
-	unsigned int numRows;
-	unsigned int numCols;
-	unsigned int numOfCells;
+	float cellSize;
 
-	std::vector<std::vector<unsigned int>>cells;
+	int numOfCols;
+	int numOfCells;
+	int numOfRows;
+
+	std::vector<GridCell>cells;
 
 
-	unsigned int getCellID(unsigned int row, unsigned int col);
+	int getCellID(unsigned int row, unsigned int col);
 public:
 
 	UniformGrid(float cellSize);
 	void clearGrid();
 	void addItem(float posX, float posY, unsigned int objID);
-	std::vector<unsigned int>  getNeighbours(unsigned int cellID);
-	std::vector<unsigned int> getCellItems(unsigned int cellID);
+	void getNeighbours(unsigned int cellID,std::vector<unsigned int>&nbr)const ;
+	std::vector<unsigned int> getCellItems(unsigned int cellID)const ;
 	unsigned int getNumOfCells()const;
 };
