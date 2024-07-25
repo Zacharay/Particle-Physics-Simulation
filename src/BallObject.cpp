@@ -8,10 +8,10 @@ BallObject::BallObject():radius(10.0f)
 	this->ballColor = glm::vec3(1.0f, 1.0f, 1.0f);
 
 }
-BallObject::BallObject(glm::vec2 position,glm::vec3 color,float radius):radius(radius)
+BallObject::BallObject(glm::vec2 position,glm::vec2 prevPosition,glm::vec3 color,float radius):radius(radius)
 {
 	this->currentPosition = position;
-	this->previousPosition = position;
+	this->previousPosition = prevPosition;
 	this->acceleration = glm::vec2(0.0f, 0.0f);
 
 	this->ballColor = color;
@@ -36,14 +36,7 @@ void BallObject::accelerate(glm::vec2 acc)
 	this->acceleration += acc;;
 }
 
-glm::vec2 BallObject::getCurrentPosition() const
-{
-	return this->currentPosition;
-}
-glm::vec2 BallObject::getPreviousPosition() const
-{
-	return this->previousPosition;
-}
+
 
 float BallObject::getRadius() const
 {
@@ -55,13 +48,3 @@ glm::vec3 BallObject::getBallColor() const
 	return this->ballColor;
 }
 
-void BallObject::setCurrentPosition(glm::vec2 pos)
-{
-	this->currentPosition = pos;
-}
-
-
-void BallObject::setPreviousPosition(glm::vec2 pos)
-{
-	this->previousPosition = pos;
-}

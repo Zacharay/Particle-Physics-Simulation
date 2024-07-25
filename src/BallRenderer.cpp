@@ -32,8 +32,12 @@ BallRenderer::~BallRenderer()
 	glDeleteVertexArrays(1, &this->VAO);
 	glDeleteBuffers(1, &this->VBO);
 }
-void BallRenderer::Draw(glm::vec2 ballPosition,glm::vec3 ballColor, float radius)
+void BallRenderer::Draw(BallObject *obj)
 {
+	glm::vec2 ballPosition = obj->currentPosition;
+	float radius = obj->getRadius();
+	glm::vec3 ballColor = obj->getBallColor();
+
 	glm::mat4 model = glm::mat4(1.0f);
 
 	model = glm::translate(model, glm::vec3(ballPosition, 0.0f));

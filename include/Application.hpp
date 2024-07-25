@@ -17,13 +17,11 @@ private:
 	PhysicsSolver *physicsSolver;
 	TextRenderer* textRenderer;
 
-	const float FIXED_SPAWN_RATE = 0.02f;
+	const float FIXED_SPAWN_RATE = 0.00f;
 	float accumulator = 0.0f;
 	double lastTime;
-	unsigned int numOfObjects = 0;
 
-	std::vector<BallObject*> objects;
-	void spawnObject();
+
 protected:
 
 	void onUpdate() override;

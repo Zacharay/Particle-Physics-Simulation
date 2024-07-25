@@ -4,6 +4,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "Shader.hpp"
+#include "BallObject.hpp"
 class BallRenderer {
 private:
 	unsigned int VBO, VAO, IBO;
@@ -14,6 +15,6 @@ private:
 public:
 	BallRenderer();
 	~BallRenderer();
-	void Draw(glm::vec2 ballPosition,glm::vec3 ballColor, float radius);
+	void Draw(BallObject *Obj);
 	void InitializeVertices();
 };

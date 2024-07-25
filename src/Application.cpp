@@ -5,7 +5,7 @@ Application::Application() :Window(WINDOW_WIDTH, WINDOW_HEIGHT, "Particle Physic
 {
 	
 	this->ballRenderer = new BallRenderer();
-	this->physicsSolver = new PhysicsSolver(this->objects);
+	this->physicsSolver = new PhysicsSolver();
 	this->textRenderer = new TextRenderer();
 	this->lastTime = glfwGetTime();
 }
@@ -20,12 +20,11 @@ void Application::onUpdate()
 
 	deltaTime = std::min(static_cast<double>(1.0f / FRAMES_PER_SECOND), deltaTime);
 	this->accumulator += deltaTime;
-
-	if (this->accumulator > this->FIXED_SPAWN_RATE && this->numOfObjects < MAX_OBJECTS)
+	
+	if (this->accumulator > this->FIXED_SPAWN_RATE && this->physicsSolver->objects.size()<=MAX_OBJECTS)
 	{
 		this->accumulator -= this->FIXED_SPAWN_RATE;
-		this->numOfObjects++;
-		this->spawnObject();
+		this->physicsSolver->spawnObject();
 	}
 	
 
@@ -38,12 +37,13 @@ void Application::onRender()
 {
 	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
-	for (auto ballObject : this->objects)
+	for (BallObject *ballObject : this->physicsSolver->objects)
 	{
-		this->ballRenderer->Draw(ballObject->getCurrentPosition(),ballObject->getBallColor(), ballObject->getRadius());
+
+		this->ballRenderer->Draw(ballObject);
 	}
 
-	std::string objectStr = "Objects: " + std::to_string(this->numOfObjects);
+	std::string objectStr = "Objects: " + std::to_string(this->physicsSolver->objects.size());
 	this->textRenderer->DrawText(objectStr,600, 760);
 
 	unsigned int collsionChecks = this->physicsSolver->getCollisionChecks();
@@ -52,30 +52,7 @@ void Application::onRender()
 
 
 }
-void Application::spawnObject()
-{
-	glm::vec3 color;
-	if (numOfObjects % 2 == 0)
-		color = glm::vec3(0, 0, 1);
-	else if (numOfObjects % 3 == 0)
-		color = glm::vec3(0, 1, 0);
-	else
-		color = glm::vec3(1, 0, 0);
 
-
-	const float radius = 5.0f;
-	float initalXPos = 6 * radius;
-	float initalYPos = WINDOW_HEIGHT - 6 * radius;
-
-	glm::vec2 spawnerPos = glm::vec2(initalXPos, initalYPos);
-
-	float initalXOffset = -4.0f;
-	float initalYOffset = 1.5f;
-
-	BallObject* obj = new BallObject(spawnerPos, color, radius);
-	obj->setPreviousPosition(glm::vec2(initalXPos + initalXOffset, initalYPos + initalYOffset));
-	this->objects.push_back(obj);
-}
 
 
 

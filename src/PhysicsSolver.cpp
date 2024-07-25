@@ -1,21 +1,40 @@
 #include "PhysicsSolver.hpp"
 
 #include <iostream>
-PhysicsSolver::PhysicsSolver(std::vector<BallObject*>& objects) :gameObjects(objects)
+PhysicsSolver::PhysicsSolver()
 {
-	
-	this->grid = new UniformGrid(20.0f);
+	constexpr float gridCellSize = 20.0f;
 
-	for (int i = 0; i < this->gameObjects.size(); i++)
-	{
-		glm::vec2 ballPos = this->gameObjects[i]->getCurrentPosition();
+	this->grid = new UniformGrid(gridCellSize);
 
-		this->grid->addItem(ballPos.x, ballPos.y, i);
-	}
-
+	this->objects.reserve(MAX_OBJECTS);
 }
 
+void PhysicsSolver::spawnObject()
+{
+	glm::vec3 color;
+	if (objects.size() % 2 == 0)
+		color = glm::vec3(0, 0, 1);
+	else if (objects.size() % 3 == 0)
+		color = glm::vec3(0, 1, 0);
+	else
+		color = glm::vec3(1, 0, 0);
 
+
+	const float radius = 5.0f;
+	float initalXPos = 6 * radius ;
+	float initalYPos = WINDOW_HEIGHT - 6 * radius;
+
+	glm::vec2 spawnerPos = glm::vec2(initalXPos , initalYPos);
+	
+	float initalXOffset = -4.0f;
+	float initalYOffset = 1.5f;
+
+	glm::vec2 previousPos = glm::vec2(initalXPos + initalXOffset, initalYPos + initalYOffset);
+
+	BallObject* newObj = new BallObject(spawnerPos, previousPos, color, radius);
+	this->objects.push_back(newObj);
+}
 void PhysicsSolver::applyPhysics(float dt)
 {
 		applyGravity();
@@ -30,12 +49,10 @@ unsigned int PhysicsSolver::getCollisionChecks()
 }
 void PhysicsSolver::updatePositions(float dt)
 {
-	for (int i = 0; i < this->gameObjects.size(); i++)
+	for (BallObject * obj :this->objects)
 	{
-		BallObject* obj = this->gameObjects[i];
-
 		obj->updatePosition(dt);
-
+		
 
 	}
 
@@ -43,51 +60,47 @@ void PhysicsSolver::updatePositions(float dt)
 void PhysicsSolver::applyGravity()
 {
 
-	for (auto gameObject : gameObjects)
+	for (auto object : objects)
 	{
-		gameObject->accelerate(gravity);
+		object->accelerate(gravity);
 
 	}
 
 }
 void PhysicsSolver::applyConstrains()
 {
-	for (int i = 0; i < this->gameObjects.size(); i++)
+	for (int i = 0; i < this->objects.size(); i++)
 	{
-		BallObject* ballObject = this->gameObjects[i];
-		float radius = ballObject->getRadius();
-		glm::vec2 currentPosition = ballObject->getCurrentPosition();
-		glm::vec2 previousPosition = ballObject->getPreviousPosition();
+		BallObject* obj = this->objects[i];
+		float radius = obj->getRadius();
 
-		glm::vec2 velocity = currentPosition - previousPosition;
+		glm::vec2 velocity = obj->currentPosition - obj->previousPosition;
 
-		if (currentPosition.x < radius)
+		if (obj->currentPosition.x < radius)
 		{
-			ballObject->setCurrentPosition(glm::vec2(radius, currentPosition.y));
-			ballObject->setPreviousPosition(glm::vec2(previousPosition.x + velocity.x, previousPosition.y));
+			obj->currentPosition = glm::vec2(radius, obj->currentPosition.y);
+			obj->previousPosition = glm::vec2(obj->previousPosition.x + velocity.x, obj->previousPosition.y);
 		}
-		else if (currentPosition.x > WINDOW_WIDTH - radius)
+		else if (obj->currentPosition.x > WINDOW_WIDTH - radius)
 		{
-			ballObject->setCurrentPosition(glm::vec2(WINDOW_WIDTH - radius, currentPosition.y));
-			ballObject->setPreviousPosition(glm::vec2(previousPosition.x + velocity.x, previousPosition.y));
+			obj->currentPosition= glm::vec2(WINDOW_WIDTH - radius, obj->currentPosition.y);
+			obj->previousPosition = glm::vec2(obj->previousPosition.x + velocity.x, obj->previousPosition.y);
 		}
 
-		currentPosition = ballObject->getCurrentPosition();
-		previousPosition = ballObject->getPreviousPosition();
-		velocity = currentPosition - previousPosition;
-		if (currentPosition.y < radius)
+		velocity = obj->currentPosition - obj->previousPosition;
+		if (obj->currentPosition.y < radius)
 		{
-			ballObject->setCurrentPosition(glm::vec2(currentPosition.x, radius));
-			ballObject->setPreviousPosition(glm::vec2(previousPosition.x, previousPosition.y + velocity.y));
+			obj->currentPosition=glm::vec2(obj->currentPosition.x, radius);
+			obj->previousPosition=glm::vec2(obj->previousPosition.x, obj->previousPosition.y + velocity.y);
 		}
-		else if (currentPosition.y > WINDOW_HEIGHT - radius)
+		else if (obj->currentPosition.y > WINDOW_HEIGHT - radius)
 		{
-			ballObject->setCurrentPosition(glm::vec2(currentPosition.x, WINDOW_HEIGHT - radius));
-			ballObject->setPreviousPosition(glm::vec2(previousPosition.x, previousPosition.y + velocity.y));
+			obj->currentPosition =glm::vec2(obj->currentPosition.x, WINDOW_HEIGHT - radius);
+			obj->previousPosition =glm::vec2(obj->previousPosition.x, obj->previousPosition.y + velocity.y);
 		}
 
 
-		glm::vec2 currentPos = ballObject->getCurrentPosition();
+		glm::vec2 currentPos = obj->currentPosition;
 		grid->addItem(currentPos.x, currentPos.y, i);
 	}
 }
@@ -97,30 +110,32 @@ void PhysicsSolver::solveCollisions()
 	for (int cellID = 0; cellID < grid->getNumOfCells(); cellID++)
 	{
 		std::vector<unsigned int> currentCellObjectsID = grid->getCellItems(cellID);
-		std::vector<unsigned int> neighboursObjects;
-		grid->getNeighbours(cellID, neighboursObjects);
+		std::vector<unsigned int> neighboursObjectsID;
+		grid->getNeighbours(cellID, neighboursObjectsID);
 
-		for (int i = 0; i < currentCellObjectsID.size(); i++)
+		for (unsigned int currentCellObjID: currentCellObjectsID)
 		{
-			unsigned int id1 = currentCellObjectsID[i];
-			BallObject* obj1 = this->gameObjects[id1];
-			for (int j = i+1; j < currentCellObjectsID.size(); j++)
-			{
-				unsigned int id2 = currentCellObjectsID[j];
+			
+			BallObject * currentCellObj = this->objects[currentCellObjID];
+			
 
-				BallObject* obj2 = this->gameObjects[id2];
+			for (unsigned int currentCellSecondObjID : currentCellObjectsID)
+			{
+				if (currentCellObjID == currentCellSecondObjID)continue;
+
+
+				BallObject* currentCellSecondObj = this->objects[currentCellSecondObjID];
+				
 				currentCollisions++;
-				resolveCollision(*obj1, *obj2);
+				
+				resolveCollision(*currentCellObj, *currentCellSecondObj);
 			}
-			for (int j = 0; j < neighboursObjects.size(); j++)
+			for (unsigned int nbrID:neighboursObjectsID)
 			{
-
-				unsigned int id2 = neighboursObjects[j];
-
-
-				BallObject* obj2 = this->gameObjects[id2];
+				BallObject* nbrObj = this->objects[nbrID];
+				
 				currentCollisions++;
-				resolveCollision(*obj1, *obj2);
+				resolveCollision(*currentCellObj, *nbrObj);
 			}
 		}
 
@@ -132,8 +147,9 @@ void PhysicsSolver::solveCollisions()
 }
 void PhysicsSolver::resolveCollision(BallObject& ballObj1, BallObject& ballObj2)
 {
-	glm::vec2 position1 = ballObj1.getCurrentPosition();
-	glm::vec2 position2 = ballObj2.getCurrentPosition();
+	glm::vec2 position1 = ballObj1.currentPosition;
+	glm::vec2 position2 = ballObj2.currentPosition;
+
 	glm::vec2 collisionAxis = position1 - position2;
 
 	float radiusSum = ballObj1.getRadius() + ballObj2.getRadius();
@@ -148,8 +164,8 @@ void PhysicsSolver::resolveCollision(BallObject& ballObj1, BallObject& ballObj2)
 
 	glm::vec2 displacement = halfOverlap * normalizedCollisionAxis;
 
-	ballObj1.setCurrentPosition(position1 - displacement);
-	ballObj2.setCurrentPosition(position2 + displacement);
+	ballObj1.currentPosition = position1 - displacement;
+	ballObj2.currentPosition = position2 + displacement;
 
 
 }

@@ -10,17 +10,15 @@ private:
 public:
 	glm::vec2 currentPosition;
 	glm::vec2 previousPosition;
+	
 	BallObject();
-	BallObject(glm::vec2 position, glm::vec3 color,float radius);
+	BallObject(glm::vec2 position, glm::vec2 prevPosition, glm::vec3 color,float radius);
 	void updatePosition(float dt);
 	void accelerate(glm::vec2 acc);
 	float getRadius()const;
 	glm::vec3 getBallColor()const;
 
 
-	glm::vec2 getCurrentPosition()const;
-	glm::vec2 getPreviousPosition()const;
-	void setCurrentPosition(glm::vec2 pos);
-	void setPreviousPosition(glm::vec2 pos);
+	
 
 };
