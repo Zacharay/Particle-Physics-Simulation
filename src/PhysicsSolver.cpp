@@ -1,6 +1,7 @@
 #include "PhysicsSolver.hpp"
 
 #include <iostream>
+#include <thread>
 PhysicsSolver::PhysicsSolver()
 {
 	constexpr float gridCellSize = 20.0f;
@@ -10,7 +11,7 @@ PhysicsSolver::PhysicsSolver()
 	this->objects.reserve(MAX_OBJECTS);
 }
 
-void PhysicsSolver::spawnObject()
+void PhysicsSolver::spawnObject(float xPos, float yPos)
 {
 	glm::vec3 color;
 	if (objects.size() % 2 == 0)
@@ -21,27 +22,19 @@ void PhysicsSolver::spawnObject()
 		color = glm::vec3(1, 0, 0);
 
 
-	const float radius = 5.0f;
-	float initalXPos = 6 * radius ;
-	float initalYPos = WINDOW_HEIGHT - 6 * radius;
-
-	glm::vec2 spawnerPos = glm::vec2(initalXPos , initalYPos);
+	color = glm::vec3(1.0f, 1.0f, 1.0f);
+	glm::vec2 spawnerPos = glm::vec2(xPos, yPos);
 	
-	float initalXOffset = -4.0f;
-	float initalYOffset = 1.5f;
-
-	glm::vec2 previousPos = glm::vec2(initalXPos + initalXOffset, initalYPos + initalYOffset);
-
-	BallObject* newObj = new BallObject(spawnerPos, previousPos, color, radius);
+	BallObject* newObj = new BallObject(spawnerPos, spawnerPos, color, this->radius);
 	this->objects.push_back(newObj);
 }
 void PhysicsSolver::applyPhysics(float dt)
 {
-		applyGravity();
-		applyConstrains();
-		solveCollisions();
-		grid->clearGrid();
-		updatePositions(dt);
+	applyGravity();
+	applyConstrains();
+	solveCollisions();
+	grid->clearGrid();
+	updatePositions(dt);
 }
 unsigned int PhysicsSolver::getCollisionChecks()
 {
@@ -166,6 +159,11 @@ void PhysicsSolver::resolveCollision(BallObject& ballObj1, BallObject& ballObj2)
 
 	ballObj1.currentPosition = position1 - displacement;
 	ballObj2.currentPosition = position2 + displacement;
+}
 
 
+void PhysicsSolver::resetSimulationState()
+{
+	this->objects.clear();
+	this->grid->clearGrid();
 }

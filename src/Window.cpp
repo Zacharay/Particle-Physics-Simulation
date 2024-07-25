@@ -1,10 +1,14 @@
 
 #include "Window.hpp"
 
+
+
 void Window::framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
 	glViewport(0, 0, width, height);
 }
+
+
 
 Window::Window(unsigned int width, unsigned int height, const char* windowName)
 {
@@ -23,6 +27,7 @@ Window::Window(unsigned int width, unsigned int height, const char* windowName)
 		//Add some assertion right here
 	}
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
 	glViewport(0, 0, width, height);
 }
 void Window::mainLoop()
@@ -39,6 +44,9 @@ void Window::mainLoop()
 		std::chrono::duration<double> elapsedTime = currentTime - previousUpdateTime;
 		previousUpdateTime = currentTime;
 		accumulator += elapsedTime.count();
+
+		processEvents();
+
 
 		while (accumulator >= updateInterval) {
 			// FPS calculation

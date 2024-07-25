@@ -4,11 +4,13 @@
 #include "Globals.hpp"
 #include "UniformGrid.hpp"
 class PhysicsSolver {
+	glm::vec2 gravity = glm::vec2(0.0f, -500.0f);
+
 	UniformGrid* grid;
-	
+	const float radius = 5.0f;
 
 	unsigned int collisionChecks = 0;
-	glm::vec2 gravity = glm::vec2(0.0f, -500.0f);
+	
 	void applyConstrains();
 	void applyGravity();
 	void updatePositions(float dt);
@@ -16,10 +18,12 @@ class PhysicsSolver {
 	void resolveCollision(BallObject& ballObj1, BallObject& ballObj2);
 	
 public:
-	void spawnObject();
+	
+	void spawnObject(float xPos,float yPos);
 	std::vector<BallObject*>objects;
 	PhysicsSolver();
 	void applyPhysics(float dt);
 	unsigned int getCollisionChecks();
+	void resetSimulationState();
 };
 

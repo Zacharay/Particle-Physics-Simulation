@@ -9,13 +9,16 @@ private:
 	unsigned int frameCount = 0;
 
 	static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-	GLFWwindow* window;
+
 public:
 	Window(unsigned int width,unsigned int height,const char *windowName);
 	void mainLoop();
 
 protected:
+	GLFWwindow* window;
 	virtual void onUpdate() = 0;
 	virtual void onRender() = 0;
+	virtual void processEvents() = 0;
+	
 	unsigned int getCurrentFrames()const;
 };

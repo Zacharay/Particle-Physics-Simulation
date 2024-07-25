@@ -20,12 +20,15 @@ private:
 	const float FIXED_SPAWN_RATE = 0.00f;
 	float accumulator = 0.0f;
 	double lastTime;
-
+	
+	static void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
+	void processMouseEvents();
 
 protected:
 
 	void onUpdate() override;
 	void onRender()override;
+	void processEvents()override;
 	
 public:
 	Application();
