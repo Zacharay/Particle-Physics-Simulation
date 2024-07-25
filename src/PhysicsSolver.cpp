@@ -21,8 +21,6 @@ void PhysicsSolver::spawnObject(float xPos, float yPos)
 	else
 		color = glm::vec3(1, 0, 0);
 
-
-	color = glm::vec3(1.0f, 1.0f, 1.0f);
 	glm::vec2 spawnerPos = glm::vec2(xPos, yPos);
 	
 	BallObject* newObj = new BallObject(spawnerPos, spawnerPos, color, this->radius);
@@ -30,11 +28,11 @@ void PhysicsSolver::spawnObject(float xPos, float yPos)
 }
 void PhysicsSolver::applyPhysics(float dt)
 {
-	applyGravity();
-	applyConstrains();
-	solveCollisions();
-	grid->clearGrid();
-	updatePositions(dt);
+		applyGravity();
+		applyConstrains();
+		solveCollisions();
+		grid->clearGrid();
+		updatePositions(dt);
 }
 unsigned int PhysicsSolver::getCollisionChecks()
 {

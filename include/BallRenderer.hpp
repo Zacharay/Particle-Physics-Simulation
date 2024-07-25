@@ -15,6 +15,6 @@ private:
 public:
 	BallRenderer();
 	~BallRenderer();
-	void Draw(BallObject *Obj);
+	void DrawBalls(const std::vector<BallObject*>& objects)const;
 	void InitializeVertices();
 };

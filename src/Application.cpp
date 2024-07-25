@@ -46,11 +46,8 @@ void Application::onRender()
 {
 	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
-	for (BallObject *ballObject : this->physicsSolver->objects)
-	{
-
-		this->ballRenderer->Draw(ballObject);
-	}
+	
+	this->ballRenderer->DrawBalls(this->physicsSolver->objects);
 
 	std::string objectStr = "Objects: " + std::to_string(this->physicsSolver->objects.size());
 	this->textRenderer->DrawText(objectStr,600, 760);

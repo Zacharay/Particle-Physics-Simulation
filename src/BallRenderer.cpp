@@ -32,25 +32,78 @@ BallRenderer::~BallRenderer()
 	glDeleteVertexArrays(1, &this->VAO);
 	glDeleteBuffers(1, &this->VBO);
 }
-void BallRenderer::Draw(BallObject *obj)
+void BallRenderer::DrawBalls(const std::vector<BallObject*> &objects)const
 {
-	glm::vec2 ballPosition = obj->currentPosition;
-	float radius = obj->getRadius();
-	glm::vec3 ballColor = obj->getBallColor();
+	
+	
+	const unsigned int objectCount = objects.size();
 
-	glm::mat4 model = glm::mat4(1.0f);
+	glm::mat4* modelMatrices;
+	glm::vec3*  colors;
+	modelMatrices = new glm::mat4[objectCount];
+	colors = new glm::vec3[objectCount];
 
-	model = glm::translate(model, glm::vec3(ballPosition, 0.0f));
-	model = glm::scale(model, glm::vec3(radius));
+	for (int i = 0; i < objectCount; i++)
+	{
+		BallObject* obj = objects[i];
+
+		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(obj->currentPosition, 0.0f));
+		model = glm::scale(model, glm::vec3(obj->getRadius()));
+		modelMatrices[i] = model;
+
+		colors[i] = obj->getBallColor();
+
+	}
+	glBindVertexArray(this->VAO);
+	unsigned int colorBuffer;
+	glGenBuffers(1, &colorBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
+	glBufferData(GL_ARRAY_BUFFER, objectCount * sizeof(glm::vec3), &colors[0], GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(glm::vec3),(void*)0);
+	glVertexAttribDivisor(1, 1);
+
+	unsigned int instanceBuffer;
+	glGenBuffers(1, &instanceBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, instanceBuffer);
+	glBufferData(GL_ARRAY_BUFFER, objectCount * sizeof(glm::mat4), &modelMatrices[0], GL_STATIC_DRAW);
+
+
+	
+	std::size_t vec4Size = sizeof(glm::vec4);
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)0);
+
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(1*vec4Size));
+
+	glEnableVertexAttribArray(4);
+	glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(2 * vec4Size));
+
+	glEnableVertexAttribArray(5);
+	glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(3 * vec4Size));
+
+	glVertexAttribDivisor(2, 1);
+	glVertexAttribDivisor(3, 1);
+	glVertexAttribDivisor(4, 1);
+	glVertexAttribDivisor(5, 1);
 	
 	glm::mat4 projection = glm::ortho(0.0f, (float)WINDOW_WIDTH, 0.0f, (float)WINDOW_HEIGHT);
 
 	shader->useProgram();
-	shader->setMat4(model, "model");
 	shader->setMat4(projection, "projection");
-	shader->setVec3(ballColor, "uniColor");
-	glBindVertexArray(this->VAO);
-	glDrawElements(GL_TRIANGLES, this->indices.size(), GL_UNSIGNED_INT, 0);
+	shader->setVec3(glm::vec3(1.0f, 1.0f, 1.0f), "uniColor");
+
+	
+
+	glDrawElementsInstanced(GL_TRIANGLES, this->indices.size(), GL_UNSIGNED_INT,0, objectCount);
+
+	glDeleteBuffers(1, &instanceBuffer); 
+	glDeleteBuffers(1, &colorBuffer); 
+	delete [] modelMatrices;
+	delete [] colors;
 }
 void BallRenderer::InitializeVertices()
 {
