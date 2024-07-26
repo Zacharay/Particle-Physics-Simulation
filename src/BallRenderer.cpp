@@ -90,7 +90,7 @@ void BallRenderer::DrawBalls(const std::vector<BallObject*> &objects)const
 	glVertexAttribDivisor(4, 1);
 	glVertexAttribDivisor(5, 1);
 	
-	glm::mat4 projection = glm::ortho(0.0f, (float)WINDOW_WIDTH, 0.0f, (float)WINDOW_HEIGHT);
+	glm::mat4 projection = glm::ortho(0.0f, (float)SIMULATION_WIDTH, 0.0f, (float)SIMULATION_HEIGHT);
 
 	shader->useProgram();
 	shader->setMat4(projection, "projection");

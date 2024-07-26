@@ -7,8 +7,9 @@ project (CMakeTarget)
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
 file(GLOB_RECURSE SOURCES "${CMAKE_SOURCE_DIR}/src/*.cpp")
+file(GLOB_RECURSE IMGUI "${CMAKE_SOURCE_DIR}/thirdParty/include/imgui/*.cpp")
 
-add_executable (CMakeTarget ${SOURCES} "glad.c")
+add_executable (CMakeTarget ${SOURCES} ${IMGUI} "glad.c")
 
 
 target_include_directories(CMakeTarget PRIVATE ${CMAKE_SOURCE_DIR}/thirdParty/include)

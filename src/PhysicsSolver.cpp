@@ -11,28 +11,25 @@ PhysicsSolver::PhysicsSolver()
 	this->objects.reserve(MAX_OBJECTS);
 }
 
-void PhysicsSolver::spawnObject(float xPos, float yPos)
+void PhysicsSolver::spawnObject(float xPos, float yPos,glm::vec4 color,float radius)
 {
-	glm::vec3 color;
-	if (objects.size() % 2 == 0)
-		color = glm::vec3(0, 0, 1);
-	else if (objects.size() % 3 == 0)
-		color = glm::vec3(0, 1, 0);
-	else
-		color = glm::vec3(1, 0, 0);
+	
 
 	glm::vec2 spawnerPos = glm::vec2(xPos, yPos);
 	
-	BallObject* newObj = new BallObject(spawnerPos, spawnerPos, color, this->radius);
+	BallObject* newObj = new BallObject(spawnerPos, spawnerPos, glm::vec3(color.x,color.y,color.z), radius);
 	this->objects.push_back(newObj);
 }
 void PhysicsSolver::applyPhysics(float dt)
 {
+	
 		applyGravity();
 		applyConstrains();
 		solveCollisions();
 		grid->clearGrid();
 		updatePositions(dt);
+	
+
 }
 unsigned int PhysicsSolver::getCollisionChecks()
 {
@@ -72,9 +69,9 @@ void PhysicsSolver::applyConstrains()
 			obj->currentPosition = glm::vec2(radius, obj->currentPosition.y);
 			obj->previousPosition = glm::vec2(obj->previousPosition.x + velocity.x, obj->previousPosition.y);
 		}
-		else if (obj->currentPosition.x > WINDOW_WIDTH - radius)
+		else if (obj->currentPosition.x > SIMULATION_WIDTH - radius)
 		{
-			obj->currentPosition= glm::vec2(WINDOW_WIDTH - radius, obj->currentPosition.y);
+			obj->currentPosition= glm::vec2(SIMULATION_WIDTH - radius, obj->currentPosition.y);
 			obj->previousPosition = glm::vec2(obj->previousPosition.x + velocity.x, obj->previousPosition.y);
 		}
 
@@ -84,9 +81,9 @@ void PhysicsSolver::applyConstrains()
 			obj->currentPosition=glm::vec2(obj->currentPosition.x, radius);
 			obj->previousPosition=glm::vec2(obj->previousPosition.x, obj->previousPosition.y + velocity.y);
 		}
-		else if (obj->currentPosition.y > WINDOW_HEIGHT - radius)
+		else if (obj->currentPosition.y > SIMULATION_HEIGHT - radius)
 		{
-			obj->currentPosition =glm::vec2(obj->currentPosition.x, WINDOW_HEIGHT - radius);
+			obj->currentPosition =glm::vec2(obj->currentPosition.x, SIMULATION_HEIGHT - radius);
 			obj->previousPosition =glm::vec2(obj->previousPosition.x, obj->previousPosition.y + velocity.y);
 		}
 

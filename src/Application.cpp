@@ -3,7 +3,7 @@
 
 static bool isLeftMouseButtonPressed = false;
 
-Application::Application() :Window(WINDOW_WIDTH, WINDOW_HEIGHT, "Particle Physics Simulation")
+Application::Application() :Window(SIMULATION_WIDTH, SIMULATION_HEIGHT, "Particle Physics Simulation")
 {
 	
 	this->ballRenderer = new BallRenderer();
@@ -45,17 +45,17 @@ void Application::onUpdate()
 void Application::onRender()
 {
 	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	this->ballRenderer->DrawBalls(this->physicsSolver->objects);
 
 	std::string objectStr = "Objects: " + std::to_string(this->physicsSolver->objects.size());
-	this->textRenderer->DrawText(objectStr,600, 760);
+	this->textRenderer->DrawText(objectStr,10, SIMULATION_HEIGHT-40);
 
 	unsigned int collsionChecks = this->physicsSolver->getCollisionChecks();
 	std::string collisionStr = "Checks:" + std::to_string(collsionChecks);
-	this->textRenderer->DrawText(collisionStr, 600, 730);
-
+	this->textRenderer->DrawText(collisionStr, 10, SIMULATION_HEIGHT - 70);
+	
 
 }
 void Application::processEvents()
@@ -66,6 +66,57 @@ void Application::processEvents()
 		this->lastTime = glfwGetTime();
 		this->accumulator = 0;
 	}
+}
+
+void Application::renderGUI()
+{
+	ImGuiIO& io = ImGui::GetIO();
+	// Set the desired window background color
+	ImVec4 windowBgColor = ImVec4(0, 0, 0, 1.00f); 
+
+	ImFont* robotoFontBold = io.Fonts->Fonts[0]; 
+	ImFont* robotoFontRegular = io.Fonts->Fonts[1]; 
+	
+
+	ImGui::SetNextWindowPos(ImVec2(SIMULATION_WIDTH, 0), ImGuiCond_Once); 
+	ImGui::SetNextWindowSize(ImVec2(GUI_WIDTH, SIMULATION_HEIGHT), ImGuiCond_Once); 
+
+	ImGui::PushStyleColor(ImGuiCol_WindowBg, windowBgColor);
+	ImGui::Begin("Fixed Position Window", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove);
+
+	ImGui::PushFont(robotoFontBold);
+	ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f,1.0f,0.0f,1.0f));
+	ImGui::Text("FPS: 144");
+	ImGui::PopStyleColor();
+
+
+	ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+	ImGui::Text("New Object Properties");
+	ImGui::PopFont();
+
+	// squared box
+	ImGuiColorEditFlags colorEditFlags =
+		ImGuiColorEditFlags_NoSmallPreview |
+		ImGuiColorEditFlags_NoTooltip |
+		ImGuiColorEditFlags_NoLabel |
+		ImGuiColorEditFlags_NoSidePreview |
+		ImGuiColorEditFlags_NoInputs |
+		ImGuiColorEditFlags_NoAlpha |
+		ImGuiColorEditFlags_PickerHueBar;
+
+
+	ImGui::PushFont(robotoFontRegular);
+	ImGui::Text("Color");
+	ImGui::ColorPicker4("Color",(float*)&m_ballColor,colorEditFlags);
+	ImGui::Dummy(ImVec2(0.0f, 20.0f));
+
+	ImGui::Text("Radius");
+	ImGui::SliderFloat("", &m_ballRadius, 5.0f, 10.0f);
+
+	ImGui::PopStyleColor();
+	ImGui::PopFont();
+
+	ImGui::End();
 }
 
 void Application::mouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
@@ -83,11 +134,16 @@ void Application::mouseButtonCallback(GLFWwindow* window, int button, int action
 }
 void Application::processMouseEvents()
 {
+
+
 	if (isLeftMouseButtonPressed)
 	{
 		double xPos, yPos;
 		glfwGetCursorPos(this->window, &xPos, &yPos);
-		this->physicsSolver->spawnObject(xPos,WINDOW_HEIGHT-yPos);
+
+		if (xPos > SIMULATION_WIDTH)return;
+
+		this->physicsSolver->spawnObject(xPos,SIMULATION_HEIGHT-yPos,m_ballColor,m_ballRadius);
 		
 	}
 }

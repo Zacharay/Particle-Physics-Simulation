@@ -11,7 +11,7 @@ UniformGrid::UniformGrid(float cellSize)
 {
 
 	this->cellSize = cellSize;
-	this->numOfCols = static_cast<int>(WINDOW_WIDTH / cellSize);
+	this->numOfCols = static_cast<int>(SIMULATION_WIDTH / cellSize);
 	this->numOfRows = this->numOfCols;
 	this->numOfCells = this->numOfCols * this->numOfCols;
 

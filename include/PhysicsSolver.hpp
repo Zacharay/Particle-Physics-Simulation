@@ -7,7 +7,7 @@ class PhysicsSolver {
 	glm::vec2 gravity = glm::vec2(0.0f, -500.0f);
 
 	UniformGrid* grid;
-	const float radius = 5.0f;
+
 
 	unsigned int collisionChecks = 0;
 	
@@ -19,7 +19,7 @@ class PhysicsSolver {
 	
 public:
 	
-	void spawnObject(float xPos,float yPos);
+	void spawnObject(float xPos, float yPos, glm::vec4 color, float radius);
 	std::vector<BallObject*>objects;
 	PhysicsSolver();
 	void applyPhysics(float dt);

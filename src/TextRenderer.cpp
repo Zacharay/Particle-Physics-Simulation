@@ -176,7 +176,7 @@ void TextRenderer::DrawText(std::string str, unsigned int xPos, unsigned int yPo
 
 
 	glBindTexture(GL_TEXTURE_2D, this->textureID);
-	glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(WINDOW_WIDTH), 0.0f, static_cast<float>(WINDOW_HEIGHT));
+	glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(SIMULATION_WIDTH), 0.0f, static_cast<float>(SIMULATION_HEIGHT));
 	this->shader->useProgram();
 	this->shader->setMat4(projection, "projection");
 

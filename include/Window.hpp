@@ -1,4 +1,9 @@
 #pragma once
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_glfw.h"
+#include "imgui/imgui_impl_opengl3.h"
+
+
 #include "Globals.hpp"
 #include "glad/glad.h"
 #include "glfw3.h"
@@ -19,6 +24,7 @@ protected:
 	virtual void onUpdate() = 0;
 	virtual void onRender() = 0;
 	virtual void processEvents() = 0;
+	virtual void renderGUI()=0;
 	
 	unsigned int getCurrentFrames()const;
 };
