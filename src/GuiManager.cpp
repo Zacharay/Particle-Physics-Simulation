@@ -1,9 +1,10 @@
 #include "GuiManager.hpp"
+#include <string>
+static int selectedOption = 0;
 
 void GuiManager::render()
 {
 	ImGuiIO& io = ImGui::GetIO();
-	// Set the desired window background color
 	ImVec4 windowBgColor = ImVec4(0, 0, 0, 1.00f);
 
 	ImFont* robotoFontBold = io.Fonts->Fonts[0];
@@ -19,7 +20,7 @@ void GuiManager::render()
 
 	ImGui::PushFont(robotoFontBold);
 	ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 0.0f, 1.0f));
-	ImGui::Text("FPS: 144");
+	ImGui::Text("FPS: 60");
 	ImGui::PopStyleColor();
 
 
@@ -53,7 +54,29 @@ void GuiManager::render()
 	ImGui::SliderFloat("Y-axis gravity", &m_gravityDirection.y, -1.0f
 		, 1.0f);
 	ImGui::PopFont();
+
+	ImGui::Dummy(ImVec2(0.0f, 10.0f));
+
+	
+
+	ImGui::PushFont(robotoFontBold);
+	ImGui::Text("Mouse Behaviour");
+	ImGui::PopFont();
+
+	ImGui::PushFont(robotoFontRegular);
+
+	ImGui::RadioButton("Spawner", &selectedOption,0);
+	ImGui::SameLine();
+	ImGui::RadioButton("Attraction" , &selectedOption,1);
+	ImGui::SameLine();
+	ImGui::RadioButton("Repulsion", &selectedOption,2);
+
+	ImGui::PopFont();
+	
+
 	ImGui::PopStyleColor();
+
+
 	ImGui::End(); 
 }
 

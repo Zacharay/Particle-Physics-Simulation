@@ -28,9 +28,9 @@ enum GravityDirection {
 class GuiManager {
 private:
 
-	glm::vec4 m_ballColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	glm::vec4 m_ballColor = glm::vec4(0.0f, 0.2f,1.0f, 1.0f);
 	float m_ballRadius = 10;
-	float m_gravityForce = 10.0f;
+	float m_gravityForce = 5.0f;
 	glm::vec2 m_gravityDirection = glm::vec2(0.0f, -1.0f);
 
 

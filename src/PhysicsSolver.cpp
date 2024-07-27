@@ -56,39 +56,12 @@ void PhysicsSolver::applyGravity()
 }
 void PhysicsSolver::applyConstrains()
 {
-	for (int i = 0; i < this->objects.size(); i++)
+	int idx = 0;
+	for (const std::unique_ptr<BallObject>&obj :this->objects)
 	{
-		BallObject& obj = *this->objects[i];
-		float radius = obj.getRadius();
-
-		glm::vec2 velocity = obj.currentPosition - obj.previousPosition;
-
-		if (obj.currentPosition.x < radius)
-		{
-			obj.currentPosition = glm::vec2(radius, obj.currentPosition.y);
-			obj.previousPosition = glm::vec2(obj.previousPosition.x + velocity.x, obj.previousPosition.y);
-		}
-		else if (obj.currentPosition.x > SIMULATION_WIDTH - radius)
-		{
-			obj.currentPosition= glm::vec2(SIMULATION_WIDTH - radius, obj.currentPosition.y);
-			obj.previousPosition = glm::vec2(obj.previousPosition.x + velocity.x, obj.previousPosition.y);
-		}
-
-		velocity = obj.currentPosition - obj.previousPosition;
-		if (obj.currentPosition.y < radius)
-		{
-			obj.currentPosition=glm::vec2(obj.currentPosition.x, radius);
-			obj.previousPosition=glm::vec2(obj.previousPosition.x, obj.previousPosition.y + velocity.y);
-		}
-		else if (obj.currentPosition.y > SIMULATION_HEIGHT - radius)
-		{
-			obj.currentPosition = glm::vec2(obj.currentPosition.x, SIMULATION_HEIGHT - radius);
-			obj.previousPosition = glm::vec2(obj.previousPosition.x, obj.previousPosition.y + velocity.y);
-		}
-
-
-		glm::vec2 currentPos = obj.currentPosition;
-		ptr_grid->addItem(currentPos.x, currentPos.y, i);
+		obj->applyConstrains();
+		ptr_grid->addItem(obj->getCurrentPosition().x, obj->getCurrentPosition().y, idx);
+		idx++;
 	}
 }
 void PhysicsSolver::solveCollisions()
@@ -134,8 +107,8 @@ void PhysicsSolver::solveCollisions()
 }
 void PhysicsSolver::resolveCollision(BallObject& ballObj1, BallObject& ballObj2)
 {
-	glm::vec2 position1 = ballObj1.currentPosition;
-	glm::vec2 position2 = ballObj2.currentPosition;
+	glm::vec2 position1 = ballObj1.getCurrentPosition();
+	glm::vec2 position2 = ballObj2.getCurrentPosition();
 
 	glm::vec2 collisionAxis = position1 - position2;
 
@@ -152,8 +125,8 @@ void PhysicsSolver::resolveCollision(BallObject& ballObj1, BallObject& ballObj2)
 
 	glm::vec2 displacement = halfOverlap * normalizedCollisionAxis;
 
-	ballObj1.currentPosition = position1 - displacement;
-	ballObj2.currentPosition = position2 + displacement ;
+	ballObj1.setCurrentPosition(position1 - displacement);
+	ballObj2.setCurrentPosition(position2 + displacement);
 }
 
 

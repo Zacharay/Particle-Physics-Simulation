@@ -1,20 +1,20 @@
 #include "BallObject.hpp"
-#include <iostream>
-BallObject::BallObject():radius(10.0f)
+
+BallObject::BallObject():m_radius(10.0f)
 {
-	this->currentPosition = glm::vec2(400.0f, 400.0f);
-	this->previousPosition = glm::vec2(400.0f, 400.0f);
-	this->acceleration = glm::vec2(0.0f, 0.0f);
-	this->ballColor = glm::vec3(1.0f, 1.0f, 1.0f);
+	m_currentPosition = glm::vec2(400.0f, 400.0f);
+	m_previousPosition = glm::vec2(400.0f, 400.0f);
+	m_acceleration = glm::vec2(0.0f, 0.0f);
+	m_ballColor = glm::vec3(1.0f, 1.0f, 1.0f);
 
 }
-BallObject::BallObject(glm::vec2 position,glm::vec2 prevPosition,glm::vec3 color,float radius):radius(radius)
+BallObject::BallObject(glm::vec2 position,glm::vec2 prevPosition,glm::vec3 color,float radius):m_radius(radius)
 {
-	this->currentPosition = position;
-	this->previousPosition = prevPosition;
-	this->acceleration = glm::vec2(0.0f, 0.0f);
+	this->m_currentPosition = position;
+	this->m_previousPosition = prevPosition;
+	m_acceleration = glm::vec2(0.0f, 0.0f);
 
-	this->ballColor = color;
+	m_ballColor = color;
 
 }
 
@@ -22,29 +22,66 @@ void BallObject::updatePosition(float dt)
 {
 	
 
-	glm::vec2 velocity = this->currentPosition - this->previousPosition;
+	glm::vec2 velocity = this->m_currentPosition - this->m_previousPosition;
 	
-	this->previousPosition = this->currentPosition;
+	this->m_previousPosition = this->m_currentPosition;
 
-	this->currentPosition = this->currentPosition + velocity + this->acceleration * (dt * dt);
+	this->m_currentPosition = this->m_currentPosition + velocity + m_acceleration * (dt * dt);
 
-	this->acceleration = glm::vec2(0.0f, 0.0f);
+	m_acceleration = glm::vec2(0.0f, 0.0f);
 }
 
 void BallObject::accelerate(glm::vec2 acc)
 {
-	this->acceleration += acc;;
+	m_acceleration += acc;;
 }
 
+void BallObject::applyConstrains() {
+	
+	
 
+	glm::vec2 velocity = m_currentPosition - m_previousPosition;
+
+	if (m_currentPosition.x < m_radius)
+	{
+		m_currentPosition = glm::vec2(m_radius, m_currentPosition.y);
+		m_previousPosition = glm::vec2(m_previousPosition.x + velocity.x, m_previousPosition.y);
+	}
+	else if (m_currentPosition.x > SIMULATION_WIDTH - m_radius)
+	{
+		m_currentPosition = glm::vec2(SIMULATION_WIDTH - m_radius, m_currentPosition.y);
+		m_previousPosition = glm::vec2(m_previousPosition.x + velocity.x, m_previousPosition.y);
+	}
+
+	velocity = m_currentPosition - m_previousPosition;
+	if (m_currentPosition.y < m_radius)
+	{
+		m_currentPosition = glm::vec2(m_currentPosition.x, m_radius);
+		m_previousPosition = glm::vec2(m_previousPosition.x, m_previousPosition.y + velocity.y);
+	}
+	else if (m_currentPosition.y > SIMULATION_HEIGHT - m_radius)
+	{
+		m_currentPosition = glm::vec2(m_currentPosition.x, SIMULATION_HEIGHT - m_radius);
+		m_previousPosition = glm::vec2(m_previousPosition.x, m_previousPosition.y + velocity.y);
+	}
+}
+
+glm::vec2 BallObject::getCurrentPosition()const
+{
+	return m_currentPosition;
+}
+void BallObject::setCurrentPosition(glm::vec2 position)
+{
+	m_currentPosition = position;
+}
 
 float BallObject::getRadius() const
 {
-	return this->radius;
+	return m_radius;
 }
 
 glm::vec3 BallObject::getBallColor() const
 {
-	return this->ballColor;
+	return m_ballColor;
 }
 

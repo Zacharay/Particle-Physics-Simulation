@@ -19,13 +19,13 @@ Application::Application() :Window(SIMULATION_WIDTH, SIMULATION_HEIGHT, "Particl
 void Application::onUpdate()
 {
 
-	double currentTime = glfwGetTime();
+	float currentTime = glfwGetTime();
 
-	double deltaTime = currentTime - m_lastTime;
+	float deltaTime = currentTime - m_lastTime;
 
 	m_lastTime = currentTime;
 
-	deltaTime = std::min(static_cast<double>(1.0f / FRAMES_PER_SECOND), deltaTime);
+	deltaTime = std::min(1.0f / FRAMES_PER_SECOND, deltaTime);
 	m_accumulator += deltaTime;
 	
 	if (m_accumulator > c_fixedSpawnRate && ptr_physicsSolver->objects.size()<=MAX_OBJECTS)
@@ -48,11 +48,11 @@ void Application::onRender()
 	
 	ptr_ballRenderer->DrawBalls(ptr_physicsSolver->objects);
 
-	std::string objectStr = "Objects: " + std::to_string(this->ptr_physicsSolver->objects.size());
+	const std::string objectStr = "Objects: " + std::to_string(this->ptr_physicsSolver->objects.size());
 	ptr_textRenderer->DrawText(objectStr,10, SIMULATION_HEIGHT-40);
 
 	unsigned int collsionChecks = ptr_physicsSolver->getCollisionChecks();
-	std::string collisionStr = "Checks:" + std::to_string(collsionChecks);
+	const std::string collisionStr = "Checks:" + std::to_string(collsionChecks);
 	ptr_textRenderer->DrawText(collisionStr, 10, SIMULATION_HEIGHT - 70);
 	
 	ptr_guiManager->render();

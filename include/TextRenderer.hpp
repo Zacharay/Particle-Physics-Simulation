@@ -28,6 +28,6 @@ private:
 
 public:
 	TextRenderer();
-	void DrawText(std::string str, unsigned int xPos, unsigned int yPos);
+	void DrawText(const std::string& str, unsigned int xPos, unsigned int yPos);
 	void LoadCharacterData();
 };

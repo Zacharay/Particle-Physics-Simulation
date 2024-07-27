@@ -121,7 +121,7 @@ void TextRenderer::LoadCharacterData()
 	}
 	file.close();
 }
-void TextRenderer::DrawText(std::string str, unsigned int xPos, unsigned int yPos)
+void TextRenderer::DrawText(const std::string &str, unsigned int xPos, unsigned int yPos)
 {
 
 	constexpr float chHeight = 32;
@@ -153,13 +153,13 @@ void TextRenderer::DrawText(std::string str, unsigned int xPos, unsigned int yPo
 		x += ch.xOffset;
 		
 
-		vertices.emplace_back(x,					y,								left, bottom);                             // Left bottom
-		vertices.emplace_back(x + textureWidth,		y,								right, bottom);                  // Right bottom
+		vertices.emplace_back(x,					y,								left, bottom);     // Left bottom
+		vertices.emplace_back(x + textureWidth,		y,								right, bottom);    // Right bottom
 		vertices.emplace_back(x + textureWidth,		y + textureHeight,				right, top);       // Right top
 
-		vertices.emplace_back(x,					y,								left, bottom);                             // Left bottom
+		vertices.emplace_back(x,					y,								left, bottom);     // Left bottom
 		vertices.emplace_back(x + textureWidth,		y + textureHeight,				right, top);       // Right top
-		vertices.emplace_back(x,					y + textureHeight,				left, top);                  // Left top
+		vertices.emplace_back(x,					y + textureHeight,				left, top);         // Left top
 		
 		x -= ch.xOffset;
 		x += ch.xAdvance;

@@ -46,7 +46,7 @@ void BallRenderer::DrawBalls(const std::vector<std::unique_ptr<BallObject>>& obj
 		const BallObject& obj = *objects[i];
 
 		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(obj.currentPosition, 0.0f));
+		model = glm::translate(model, glm::vec3(obj.getCurrentPosition(), 0.0f));
 		model = glm::scale(model, glm::vec3(obj.getRadius()));
 		modelMatrices[i] = model;
 

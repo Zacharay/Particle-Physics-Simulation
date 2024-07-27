@@ -7,13 +7,13 @@ struct GridCell {
 };
 
 class UniformGrid {
-	float cellSize;
+	float m_cellSize;
 
-	int numOfCols;
-	int numOfCells;
-	int numOfRows;
+	int m_numOfCols;
+	int m_numOfCells;
+	int m_numOfRows;
 
-	std::vector<GridCell>cells;
+	std::vector<GridCell>m_cells;
 
 
 	int getCellID(unsigned int row, unsigned int col);
