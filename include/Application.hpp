@@ -18,15 +18,14 @@ class Application :
 	public Window{
 private:
 
-
-	BallRenderer *ballRenderer;
-	PhysicsSolver *physicsSolver;
-	TextRenderer* textRenderer;
+	std::unique_ptr<BallRenderer> ptr_ballRenderer;
+	std::unique_ptr<PhysicsSolver> ptr_physicsSolver;
+	std::unique_ptr<TextRenderer> ptr_textRenderer;
 	std::unique_ptr<GuiManager> ptr_guiManager;
 
-	const float FIXED_SPAWN_RATE = 0.05f;
-	float accumulator = 0.0f;
-	double lastTime;
+	const float c_fixedSpawnRate = 0.00f;
+	float m_accumulator = 0.0f;
+	double m_lastTime;
 	
 	static void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
 	void processMouseEvents();

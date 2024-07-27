@@ -4,11 +4,7 @@
 #include <thread>
 PhysicsSolver::PhysicsSolver()
 {
-	constexpr float gridCellSize = 40.0f;
-
-	this->grid = new UniformGrid(gridCellSize);
-
-	
+	ptr_grid = std::make_unique<UniformGrid>(c_gridCellSize);
 
 	this->objects.reserve(MAX_OBJECTS);
 }
@@ -16,7 +12,6 @@ PhysicsSolver::PhysicsSolver()
 void PhysicsSolver::spawnObject(float xPos, float yPos)
 {
 	
-
 	glm::vec2 spawnerPos = glm::vec2(xPos, yPos);
 	
 
@@ -24,22 +19,24 @@ void PhysicsSolver::spawnObject(float xPos, float yPos)
 }
 void PhysicsSolver::applyPhysics(float dt)
 {
-		
-		for (int i = 0; i < 4; i++)
+			
+		float sub_dt = dt / static_cast<float>(m_substeps);
+
+		for (int i = 0; i < m_substeps; i++)
 		{
 			
 			applyGravity();
 			applyConstrains();
 			solveCollisions();
 			
-			updatePositions(dt/4.0f);
-			this->grid->clearGrid();
+			updatePositions(sub_dt);
+			ptr_grid->clearGrid();
 		}
 
 }
 unsigned int PhysicsSolver::getCollisionChecks()
 {
-	return this->collisionChecks;
+	return this->m_collisionChecks;
 }
 void PhysicsSolver::updatePositions(float dt)
 {
@@ -93,17 +90,17 @@ void PhysicsSolver::applyConstrains()
 
 
 		glm::vec2 currentPos = obj.currentPosition;
-		grid->addItem(currentPos.x, currentPos.y, i);
+		ptr_grid->addItem(currentPos.x, currentPos.y, i);
 	}
 }
 void PhysicsSolver::solveCollisions()
 {
 	unsigned int currentCollisions = 0;
-	for (int cellID = 0; cellID < grid->getNumOfCells(); cellID++)
+	for (int cellID = 0; cellID < ptr_grid->getNumOfCells(); cellID++)
 	{
-		std::vector<unsigned int> currentCellObjectsID = grid->getCellItems(cellID);
+		std::vector<unsigned int> currentCellObjectsID = ptr_grid->getCellItems(cellID);
 		std::vector<unsigned int> neighboursObjectsID;
-		grid->getNeighbours(cellID, neighboursObjectsID);
+		ptr_grid->getNeighbours(cellID, neighboursObjectsID);
 
 		for (unsigned int currentCellObjID: currentCellObjectsID)
 		{
@@ -134,7 +131,7 @@ void PhysicsSolver::solveCollisions()
 
 	}
 
-	this->collisionChecks = currentCollisions;
+	m_collisionChecks = currentCollisions;
 
 }
 void PhysicsSolver::resolveCollision(BallObject& ballObj1, BallObject& ballObj2)
@@ -165,7 +162,7 @@ void PhysicsSolver::resolveCollision(BallObject& ballObj1, BallObject& ballObj2)
 void PhysicsSolver::resetSimulationState()
 {
 	this->objects.clear();
-	this->grid->clearGrid();
+	ptr_grid->clearGrid();
 }
 
 void PhysicsSolver::setGravity(glm::vec2 gravity)

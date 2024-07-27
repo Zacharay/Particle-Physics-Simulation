@@ -6,15 +6,14 @@ static bool isLeftMouseButtonPressed = false;
 Application::Application() :Window(SIMULATION_WIDTH, SIMULATION_HEIGHT, "Particle Physics Simulation")
 {
 	
-	this->ballRenderer = new BallRenderer();
-	this->physicsSolver = new PhysicsSolver();
-	this->textRenderer = new TextRenderer();
-	this->lastTime = glfwGetTime();
+	ptr_ballRenderer = std::make_unique<BallRenderer>();
+	ptr_physicsSolver = std::make_unique<PhysicsSolver>();
+	ptr_textRenderer = std::make_unique<TextRenderer>();
 	ptr_guiManager = std::make_unique<GuiManager>();
-
-
-
+	
+	m_lastTime = glfwGetTime();
 	glfwSetMouseButtonCallback(this->window, mouseButtonCallback);
+
 }
 
 void Application::onUpdate()
@@ -22,23 +21,23 @@ void Application::onUpdate()
 
 	double currentTime = glfwGetTime();
 
-	double deltaTime = currentTime - this->lastTime;
+	double deltaTime = currentTime - m_lastTime;
 
-	this->lastTime = currentTime;
+	m_lastTime = currentTime;
 
 	deltaTime = std::min(static_cast<double>(1.0f / FRAMES_PER_SECOND), deltaTime);
-	this->accumulator += deltaTime;
+	m_accumulator += deltaTime;
 	
-	if (this->accumulator > this->FIXED_SPAWN_RATE && this->physicsSolver->objects.size()<=MAX_OBJECTS)
+	if (m_accumulator > c_fixedSpawnRate && ptr_physicsSolver->objects.size()<=MAX_OBJECTS)
 	{
-		this->accumulator -= this->FIXED_SPAWN_RATE;
+		m_accumulator -= c_fixedSpawnRate;
 		processMouseEvents();
 		
 	}
 	
 
-	this->updatePhysicsSolver();
-	this->physicsSolver->applyPhysics(deltaTime);
+	updatePhysicsSolver();
+	ptr_physicsSolver->applyPhysics(deltaTime);
 
 }
 
@@ -47,14 +46,14 @@ void Application::onRender()
 	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
-	this->ballRenderer->DrawBalls(this->physicsSolver->objects);
+	ptr_ballRenderer->DrawBalls(ptr_physicsSolver->objects);
 
-	std::string objectStr = "Objects: " + std::to_string(this->physicsSolver->objects.size());
-	this->textRenderer->DrawText(objectStr,10, SIMULATION_HEIGHT-40);
+	std::string objectStr = "Objects: " + std::to_string(this->ptr_physicsSolver->objects.size());
+	ptr_textRenderer->DrawText(objectStr,10, SIMULATION_HEIGHT-40);
 
-	unsigned int collsionChecks = this->physicsSolver->getCollisionChecks();
+	unsigned int collsionChecks = ptr_physicsSolver->getCollisionChecks();
 	std::string collisionStr = "Checks:" + std::to_string(collsionChecks);
-	this->textRenderer->DrawText(collisionStr, 10, SIMULATION_HEIGHT - 70);
+	ptr_textRenderer->DrawText(collisionStr, 10, SIMULATION_HEIGHT - 70);
 	
 	ptr_guiManager->render();
 }
@@ -62,17 +61,17 @@ void Application::processEvents()
 {
 	if (glfwGetKey(this->window, GLFW_KEY_A) == GLFW_PRESS)
 	{
-		this->physicsSolver->resetSimulationState();
-		this->lastTime = glfwGetTime();
-		this->accumulator = 0;
+		ptr_physicsSolver->resetSimulationState();
+		m_lastTime = glfwGetTime();
+		m_accumulator = 0;
 	}
 }
 
 void Application::updatePhysicsSolver()
 {
-	this->physicsSolver->setColor(ptr_guiManager->getBallColor());
-	this->physicsSolver->setGravity(ptr_guiManager->getGravity());
-	this->physicsSolver->setRadius(ptr_guiManager->getBallRadius());
+	ptr_physicsSolver->setColor(ptr_guiManager->getBallColor());
+	ptr_physicsSolver->setGravity(ptr_guiManager->getGravity());
+	ptr_physicsSolver->setRadius(ptr_guiManager->getBallRadius());
 }
 
 void Application::mouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
@@ -99,7 +98,7 @@ void Application::processMouseEvents()
 
 		if (xPos > SIMULATION_WIDTH)return;
 
-		this->physicsSolver->spawnObject(xPos,SIMULATION_HEIGHT-yPos);
+		this->ptr_physicsSolver->spawnObject(xPos,SIMULATION_HEIGHT-yPos);
 		
 	}
 }
