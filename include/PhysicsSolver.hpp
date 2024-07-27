@@ -19,7 +19,7 @@ class PhysicsSolver{
 	std::unique_ptr<UniformGrid> ptr_grid;
 
 
-	unsigned int collisionChecks = 0;
+	unsigned int m_collisionChecks = 0;
 	
 	void applyConstrains();
 	void applyGravity();

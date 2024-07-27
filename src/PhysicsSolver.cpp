@@ -13,8 +13,6 @@ void PhysicsSolver::spawnObject(float xPos, float yPos)
 {
 	
 	glm::vec2 spawnerPos = glm::vec2(xPos, yPos);
-	
-
 	this->objects.emplace_back(std::make_unique<BallObject>(spawnerPos, spawnerPos, m_ballColor, m_ballRadius));
 }
 void PhysicsSolver::applyPhysics(float dt)
