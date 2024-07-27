@@ -3,8 +3,14 @@
 #include <vector>
 #include "Globals.hpp"
 #include "UniformGrid.hpp"
+#include <memory>
+
+
 class PhysicsSolver {
-	glm::vec2 gravity = glm::vec2(0.0f, -500.0f);
+	glm::vec2 m_gravity = glm::vec2(0.0f, -2000.0f);
+	glm::vec3 m_ballColor = glm::vec3(0.0f,0.0f,0.0f);
+	float m_ballRadius = 10.0f;
+
 
 	UniformGrid* grid;
 
@@ -19,11 +25,16 @@ class PhysicsSolver {
 	
 public:
 	
-	void spawnObject(float xPos, float yPos, glm::vec4 color, float radius);
-	std::vector<BallObject*>objects;
+	void spawnObject(float xPos, float yPos);
+	std::vector<std::unique_ptr<BallObject>>objects;
 	PhysicsSolver();
 	void applyPhysics(float dt);
 	unsigned int getCollisionChecks();
 	void resetSimulationState();
+
+	void setGravity(glm::vec2 gravity);
+	void setRadius(float radius);
+	void setColor(glm::vec3 color);
+
 };
 

@@ -4,6 +4,6 @@
 #define GUI_WIDTH 400
 
 
-#define FRAMES_PER_SECOND 144.0f
+#define FRAMES_PER_SECOND 60.0f
 #define MAX_OBJECTS 10000
 

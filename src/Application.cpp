@@ -10,15 +10,15 @@ Application::Application() :Window(SIMULATION_WIDTH, SIMULATION_HEIGHT, "Particl
 	this->physicsSolver = new PhysicsSolver();
 	this->textRenderer = new TextRenderer();
 	this->lastTime = glfwGetTime();
+	ptr_guiManager = std::make_unique<GuiManager>();
+
+
 
 	glfwSetMouseButtonCallback(this->window, mouseButtonCallback);
 }
 
 void Application::onUpdate()
 {
-
-	
-
 
 	double currentTime = glfwGetTime();
 
@@ -37,7 +37,7 @@ void Application::onUpdate()
 	}
 	
 
-	
+	this->updatePhysicsSolver();
 	this->physicsSolver->applyPhysics(deltaTime);
 
 }
@@ -56,7 +56,7 @@ void Application::onRender()
 	std::string collisionStr = "Checks:" + std::to_string(collsionChecks);
 	this->textRenderer->DrawText(collisionStr, 10, SIMULATION_HEIGHT - 70);
 	
-
+	ptr_guiManager->render();
 }
 void Application::processEvents()
 {
@@ -68,55 +68,11 @@ void Application::processEvents()
 	}
 }
 
-void Application::renderGUI()
+void Application::updatePhysicsSolver()
 {
-	ImGuiIO& io = ImGui::GetIO();
-	// Set the desired window background color
-	ImVec4 windowBgColor = ImVec4(0, 0, 0, 1.00f); 
-
-	ImFont* robotoFontBold = io.Fonts->Fonts[0]; 
-	ImFont* robotoFontRegular = io.Fonts->Fonts[1]; 
-	
-
-	ImGui::SetNextWindowPos(ImVec2(SIMULATION_WIDTH, 0), ImGuiCond_Once); 
-	ImGui::SetNextWindowSize(ImVec2(GUI_WIDTH, SIMULATION_HEIGHT), ImGuiCond_Once); 
-
-	ImGui::PushStyleColor(ImGuiCol_WindowBg, windowBgColor);
-	ImGui::Begin("Fixed Position Window", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove);
-
-	ImGui::PushFont(robotoFontBold);
-	ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f,1.0f,0.0f,1.0f));
-	ImGui::Text("FPS: 144");
-	ImGui::PopStyleColor();
-
-
-	ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
-	ImGui::Text("New Object Properties");
-	ImGui::PopFont();
-
-	// squared box
-	ImGuiColorEditFlags colorEditFlags =
-		ImGuiColorEditFlags_NoSmallPreview |
-		ImGuiColorEditFlags_NoTooltip |
-		ImGuiColorEditFlags_NoLabel |
-		ImGuiColorEditFlags_NoSidePreview |
-		ImGuiColorEditFlags_NoInputs |
-		ImGuiColorEditFlags_NoAlpha |
-		ImGuiColorEditFlags_PickerHueBar;
-
-
-	ImGui::PushFont(robotoFontRegular);
-	ImGui::Text("Color");
-	ImGui::ColorPicker4("Color",(float*)&m_ballColor,colorEditFlags);
-	ImGui::Dummy(ImVec2(0.0f, 20.0f));
-
-	ImGui::Text("Radius");
-	ImGui::SliderFloat("", &m_ballRadius, 5.0f, 10.0f);
-
-	ImGui::PopStyleColor();
-	ImGui::PopFont();
-
-	ImGui::End();
+	this->physicsSolver->setColor(ptr_guiManager->getBallColor());
+	this->physicsSolver->setGravity(ptr_guiManager->getGravity());
+	this->physicsSolver->setRadius(ptr_guiManager->getBallRadius());
 }
 
 void Application::mouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
@@ -143,7 +99,7 @@ void Application::processMouseEvents()
 
 		if (xPos > SIMULATION_WIDTH)return;
 
-		this->physicsSolver->spawnObject(xPos,SIMULATION_HEIGHT-yPos,m_ballColor,m_ballRadius);
+		this->physicsSolver->spawnObject(xPos,SIMULATION_HEIGHT-yPos);
 		
 	}
 }

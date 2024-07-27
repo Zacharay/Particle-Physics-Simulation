@@ -73,15 +73,15 @@ void Window::mainLoop()
             this->onUpdate();
             accumulator -= updateInterval;
         }
-        
-        this->onRender();
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
+        this->onRender();
+        
 
-        // Render GUI
-        renderGUI();
+      
+      
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 

@@ -24,7 +24,7 @@ protected:
 	virtual void onUpdate() = 0;
 	virtual void onRender() = 0;
 	virtual void processEvents() = 0;
-	virtual void renderGUI()=0;
+	
 	
 	unsigned int getCurrentFrames()const;
 };

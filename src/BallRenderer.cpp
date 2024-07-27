@@ -23,52 +23,52 @@ BallRenderer::BallRenderer()
 
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
 	glEnableVertexAttribArray(0);
-	
+	glfwSwapInterval(1);
 	shader = new Shader("res/shaders/ballVertexShader.vs", "res/shaders/ballFragmentShader.fs");
-
+	
 }
 BallRenderer::~BallRenderer()
 {
 	glDeleteVertexArrays(1, &this->VAO);
 	glDeleteBuffers(1, &this->VBO);
 }
-void BallRenderer::DrawBalls(const std::vector<BallObject*> &objects)const
+void BallRenderer::DrawBalls(const std::vector<std::unique_ptr<BallObject>>& objects)const
 {
 	
 	
-	const unsigned int objectCount = objects.size();
+	const size_t objectCount = objects.size();
 
-	glm::mat4* modelMatrices;
-	glm::vec3*  colors;
-	modelMatrices = new glm::mat4[objectCount];
-	colors = new glm::vec3[objectCount];
+	std::vector<glm::mat4> modelMatrices(objectCount);
+	std::vector<glm::vec3> colors(objectCount);
 
 	for (int i = 0; i < objectCount; i++)
 	{
-		BallObject* obj = objects[i];
+		const BallObject& obj = *objects[i];
 
 		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(obj->currentPosition, 0.0f));
-		model = glm::scale(model, glm::vec3(obj->getRadius()));
+		model = glm::translate(model, glm::vec3(obj.currentPosition, 0.0f));
+		model = glm::scale(model, glm::vec3(obj.getRadius()));
 		modelMatrices[i] = model;
 
-		colors[i] = obj->getBallColor();
+		colors[i] = obj.getBallColor();
 
 	}
+
 	glBindVertexArray(this->VAO);
 	unsigned int colorBuffer;
 	glGenBuffers(1, &colorBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
-	glBufferData(GL_ARRAY_BUFFER, objectCount * sizeof(glm::vec3), &colors[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, objectCount * sizeof(glm::vec3), colors.data(), GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(glm::vec3),(void*)0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
 	glVertexAttribDivisor(1, 1);
 
+	
 	unsigned int instanceBuffer;
 	glGenBuffers(1, &instanceBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, instanceBuffer);
-	glBufferData(GL_ARRAY_BUFFER, objectCount * sizeof(glm::mat4), &modelMatrices[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, objectCount * sizeof(glm::mat4), modelMatrices.data(), GL_STATIC_DRAW);
 
 
 	
@@ -102,8 +102,7 @@ void BallRenderer::DrawBalls(const std::vector<BallObject*> &objects)const
 
 	glDeleteBuffers(1, &instanceBuffer); 
 	glDeleteBuffers(1, &colorBuffer); 
-	delete [] modelMatrices;
-	delete [] colors;
+
 }
 void BallRenderer::InitializeVertices()
 {
@@ -116,7 +115,7 @@ void BallRenderer::InitializeVertices()
 
 	std::vector<float>temp;
 
-	for (int i = 0; i < vCount; i++)
+	for (unsigned int i = 0; i < vCount; i++)
 	{
 		float currentAngle = angle * i;
 
@@ -128,7 +127,7 @@ void BallRenderer::InitializeVertices()
 		this->vertices.push_back(y);
 	}
 
-	for (int i = 0; i < triangleCount; i++)
+	for (unsigned int i = 0; i < triangleCount; i++)
 	{
 		this->indices.push_back(0);
 		this->indices.push_back(i+1);

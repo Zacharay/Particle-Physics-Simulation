@@ -9,31 +9,34 @@
 #include <random>
 #include "TextRenderer.hpp"
 #include "Globals.hpp"
+#include <memory>
+#include "GuiManager.hpp"
+
+
 
 class Application : 
 	public Window{
 private:
-	glm::vec4 m_ballColor = glm::vec4(1.0f,1.0f,1.0f,1.0f);
-	float m_ballRadius = 10;
 
 
 	BallRenderer *ballRenderer;
 	PhysicsSolver *physicsSolver;
 	TextRenderer* textRenderer;
+	std::unique_ptr<GuiManager> ptr_guiManager;
 
-	const float FIXED_SPAWN_RATE = 0.03f;
+	const float FIXED_SPAWN_RATE = 0.05f;
 	float accumulator = 0.0f;
 	double lastTime;
 	
 	static void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
 	void processMouseEvents();
-
+	void updatePhysicsSolver();
 protected:
 
 	void onUpdate() override;
 	void onRender()override;
 	void processEvents()override;
-	void renderGUI()override;
+
 public:
 	Application();
 };
