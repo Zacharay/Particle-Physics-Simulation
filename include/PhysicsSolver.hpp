@@ -6,6 +6,17 @@
 #include <memory>
 
 
+struct Link {
+	std::shared_ptr<BallObject> object1;
+	std::shared_ptr<BallObject>  object2;
+	float desiredLength;
+
+	Link(std::shared_ptr<BallObject>obj1, std::shared_ptr<BallObject>obj2, float length) :
+		object1(obj1),
+		object2(obj2),
+		desiredLength(length) {};
+};
+
 class PhysicsSolver{
 	const float c_gridCellSize = 40.0f;
 	
@@ -17,12 +28,13 @@ class PhysicsSolver{
 
 
 	std::unique_ptr<UniformGrid> ptr_grid;
-
+	std::vector<std::unique_ptr<Link>> links;
 
 	unsigned int m_collisionChecks = 0;
 	
 	void applyConstrains();
 	void applyGravity();
+	void updateSticks();
 	void updatePositions(float dt);
 	void solveCollisions();
 	void resolveCollision(BallObject& ballObj1, BallObject& ballObj2);
@@ -30,7 +42,7 @@ class PhysicsSolver{
 public:
 	
 	void spawnObject(float xPos, float yPos);
-	std::vector<std::unique_ptr<BallObject>>objects;
+	std::vector<std::shared_ptr<BallObject>>objects;
 	PhysicsSolver();
 	void applyPhysics(float dt);
 	unsigned int getCollisionChecks();

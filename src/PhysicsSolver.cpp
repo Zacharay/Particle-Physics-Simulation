@@ -2,18 +2,40 @@
 
 #include <iostream>
 #include <thread>
+
+
+
 PhysicsSolver::PhysicsSolver()
 {
 	ptr_grid = std::make_unique<UniformGrid>(c_gridCellSize);
 
 	this->objects.reserve(MAX_OBJECTS);
+	glm::vec2 spawnerPos = glm::vec2(400.0f + float(0 * 20.0f), 200.0f);
+	this->objects.emplace_back(std::make_shared<BallObject>(spawnerPos, spawnerPos, m_ballColor, m_ballRadius, false));
+
+	for (int i = 1; i < 20; i++)
+	{
+		glm::vec2 spawnerPos = glm::vec2(400.0f + float(i*20.0f), 200.0f);
+		this->objects.emplace_back(std::make_shared<BallObject>(spawnerPos, spawnerPos, m_ballColor, m_ballRadius, true));
+	}
+
+	spawnerPos = glm::vec2(400.0f + float(20 * 20.0f), 200.0f);
+	this->objects.emplace_back(std::make_shared<BallObject>(spawnerPos, spawnerPos, m_ballColor, m_ballRadius, false));
+
+	for (int i = 0; i <= 19; i++)
+	{
+		links.emplace_back(std::make_unique<Link>(this->objects[i], this->objects[i+1], 20));
+	}
+
+
+	
 }
 
 void PhysicsSolver::spawnObject(float xPos, float yPos)
 {
 	
 	glm::vec2 spawnerPos = glm::vec2(xPos, yPos);
-	this->objects.emplace_back(std::make_unique<BallObject>(spawnerPos, spawnerPos, m_ballColor, m_ballRadius));
+	this->objects.emplace_back(std::make_shared<BallObject>(spawnerPos, spawnerPos, m_ballColor, m_ballRadius));
 }
 void PhysicsSolver::applyPhysics(float dt)
 {
@@ -26,11 +48,11 @@ void PhysicsSolver::applyPhysics(float dt)
 			applyGravity();
 			applyConstrains();
 			solveCollisions();
-			
+			updateSticks();
 			updatePositions(sub_dt);
 			ptr_grid->clearGrid();
 		}
-
+		
 }
 unsigned int PhysicsSolver::getCollisionChecks()
 {
@@ -38,16 +60,36 @@ unsigned int PhysicsSolver::getCollisionChecks()
 }
 void PhysicsSolver::updatePositions(float dt)
 {
-	for (const std::unique_ptr<BallObject>&obj : this->objects)
+	for (const std::shared_ptr<BallObject>&obj : this->objects)
 	{
 		obj->updatePosition(dt);
 	}
 
 }
+void PhysicsSolver::updateSticks()
+{
+	for (std::unique_ptr<Link>& link : links)
+	{
+		glm::vec2 currentAxis = link->object1->getCurrentPosition() - link->object2->getCurrentPosition();
+
+		float currentDistance = glm::length(currentAxis);
+		
+
+		float scalar = (currentDistance - link->desiredLength) / 2;
+
+		currentAxis = glm::normalize(currentAxis);
+
+		if(link->object1->isKinematic())
+			link->object1->moveByVector(-currentAxis * scalar);
+		if (link->object2->isKinematic())
+			link->object2->moveByVector(currentAxis * scalar);
+
+	}
+}
 void PhysicsSolver::applyGravity()
 {
 
-	for (const std::unique_ptr<BallObject>& obj : this->objects)
+	for (const std::shared_ptr<BallObject>& obj : this->objects)
 	{
 		obj->accelerate(m_gravity);
 
@@ -57,12 +99,14 @@ void PhysicsSolver::applyGravity()
 void PhysicsSolver::applyConstrains()
 {
 	int idx = 0;
-	for (const std::unique_ptr<BallObject>&obj :this->objects)
+	for (const std::shared_ptr<BallObject>&obj :this->objects)
 	{
 		obj->applyConstrains();
 		ptr_grid->addItem(obj->getCurrentPosition().x, obj->getCurrentPosition().y, idx);
 		idx++;
 	}
+	
+
 }
 void PhysicsSolver::solveCollisions()
 {
@@ -125,8 +169,11 @@ void PhysicsSolver::resolveCollision(BallObject& ballObj1, BallObject& ballObj2)
 
 	glm::vec2 displacement = halfOverlap * normalizedCollisionAxis;
 
-	ballObj1.setCurrentPosition(position1 - displacement);
-	ballObj2.setCurrentPosition(position2 + displacement);
+
+	if(ballObj1.isKinematic())
+		ballObj1.setCurrentPosition(position1 - displacement);
+	if (ballObj2.isKinematic())
+		ballObj2.setCurrentPosition(position2 + displacement);
 }
 
 

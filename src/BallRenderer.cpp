@@ -32,7 +32,7 @@ BallRenderer::~BallRenderer()
 	glDeleteVertexArrays(1, &this->VAO);
 	glDeleteBuffers(1, &this->VBO);
 }
-void BallRenderer::DrawBalls(const std::vector<std::unique_ptr<BallObject>>& objects)const
+void BallRenderer::DrawBalls(const std::vector<std::shared_ptr<BallObject>>& objects)const
 {
 	
 	

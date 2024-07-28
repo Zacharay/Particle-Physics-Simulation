@@ -1,6 +1,6 @@
 #include "BallObject.hpp"
 
-BallObject::BallObject():m_radius(10.0f)
+BallObject::BallObject():m_radius(10.0f), m_isKinematic(true)
 {
 	m_currentPosition = glm::vec2(400.0f, 400.0f);
 	m_previousPosition = glm::vec2(400.0f, 400.0f);
@@ -8,7 +8,7 @@ BallObject::BallObject():m_radius(10.0f)
 	m_ballColor = glm::vec3(1.0f, 1.0f, 1.0f);
 
 }
-BallObject::BallObject(glm::vec2 position,glm::vec2 prevPosition,glm::vec3 color,float radius):m_radius(radius)
+BallObject::BallObject(glm::vec2 position,glm::vec2 prevPosition,glm::vec3 color,float radius,bool isKinematic):m_radius(radius), m_isKinematic(isKinematic)
 {
 	this->m_currentPosition = position;
 	this->m_previousPosition = prevPosition;
@@ -21,6 +21,7 @@ BallObject::BallObject(glm::vec2 position,glm::vec2 prevPosition,glm::vec3 color
 void BallObject::updatePosition(float dt)
 {
 	
+	if (!m_isKinematic)return;
 
 	glm::vec2 velocity = this->m_currentPosition - this->m_previousPosition;
 	
@@ -84,4 +85,11 @@ glm::vec3 BallObject::getBallColor() const
 {
 	return m_ballColor;
 }
-
+void BallObject::moveByVector(glm::vec2 moveVector)
+{
+	m_currentPosition += moveVector;
+}
+bool BallObject::isKinematic()const
+{
+	return m_isKinematic;
+}
