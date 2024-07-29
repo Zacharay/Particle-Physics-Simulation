@@ -4,6 +4,8 @@
 #include "Globals.hpp"
 #include "UniformGrid.hpp"
 #include <memory>
+#include "GuiManager.hpp"
+
 
 
 struct Link {
@@ -25,6 +27,13 @@ class PhysicsSolver{
 	glm::vec2 m_gravity = glm::vec2(0.0f, -2000.0f);
 	glm::vec3 m_ballColor = glm::vec3(0.0f,0.0f,0.0f);
 	float m_ballRadius = 10.0f;
+
+
+	float m_forceRadius ;
+	float m_forceStrength;
+	int m_forceMode;
+	bool m_isForceModeEnabled = false;
+	glm::vec2 m_forceOrigin = glm::vec2(0.0f, 0.0f);
 
 
 	std::unique_ptr<UniformGrid> ptr_grid;
@@ -51,6 +60,10 @@ public:
 	void setGravity(glm::vec2 gravity);
 	void setRadius(float radius);
 	void setColor(glm::vec3 color);
+	void setAttraction(bool isAttractionEnabled, glm::vec2 attractionPos);
+	void setForceMode(int forceMode);
+	void setForceRadius(float forceRadius);
+	void setForceStrength(float forceStrength);
 
 };
 

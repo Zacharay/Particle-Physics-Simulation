@@ -73,6 +73,8 @@ glm::vec2 BallObject::getCurrentPosition()const
 }
 void BallObject::setCurrentPosition(glm::vec2 position)
 {
+	if (!m_isKinematic)return;
+
 	m_currentPosition = position;
 }
 
@@ -87,9 +89,8 @@ glm::vec3 BallObject::getBallColor() const
 }
 void BallObject::moveByVector(glm::vec2 moveVector)
 {
+	if (!m_isKinematic)return;
+	
 	m_currentPosition += moveVector;
 }
-bool BallObject::isKinematic()const
-{
-	return m_isKinematic;
-}
+

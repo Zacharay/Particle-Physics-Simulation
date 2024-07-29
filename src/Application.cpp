@@ -72,6 +72,10 @@ void Application::updatePhysicsSolver()
 	ptr_physicsSolver->setColor(ptr_guiManager->getBallColor());
 	ptr_physicsSolver->setGravity(ptr_guiManager->getGravity());
 	ptr_physicsSolver->setRadius(ptr_guiManager->getBallRadius());
+	ptr_physicsSolver->setForceMode(ptr_guiManager->getMouseState());
+	ptr_physicsSolver->setForceStrength(ptr_guiManager->getForceStrength());
+	ptr_physicsSolver->setForceRadius(ptr_guiManager->getForceRadius());
+
 }
 
 void Application::mouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
@@ -90,17 +94,32 @@ void Application::mouseButtonCallback(GLFWwindow* window, int button, int action
 void Application::processMouseEvents()
 {
 
-
-	if (isLeftMouseButtonPressed)
+	if (ptr_guiManager->getMouseState() == MouseState::Spawner)
 	{
-		double xPos, yPos;
-		glfwGetCursorPos(this->window, &xPos, &yPos);
+		if (isLeftMouseButtonPressed)
+		{
+			double xPos, yPos;
+			glfwGetCursorPos(this->window, &xPos, &yPos);
 
-		if (xPos > SIMULATION_WIDTH)return;
+			if (xPos > SIMULATION_WIDTH)return;
 
-		this->ptr_physicsSolver->spawnObject(xPos,SIMULATION_HEIGHT-yPos);
-		
+			this->ptr_physicsSolver->spawnObject(xPos, SIMULATION_HEIGHT - yPos);
+		}
 	}
+	else if (ptr_guiManager->getMouseState() == MouseState::Attraction || ptr_guiManager->getMouseState() == MouseState::Repulsion)
+	{
+		if (isLeftMouseButtonPressed)
+		{
+			double xPos, yPos;
+			glfwGetCursorPos(this->window, &xPos, &yPos);
+
+			this->ptr_physicsSolver->setAttraction(true, glm::vec2(xPos, SIMULATION_HEIGHT - yPos));
+		}
+		else {
+			this->ptr_physicsSolver->setAttraction(false, glm::vec2(0.0f, 0.0f));
+		}
+	}
+	
 }
 
 

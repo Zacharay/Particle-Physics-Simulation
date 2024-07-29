@@ -1,6 +1,6 @@
 #include "GuiManager.hpp"
 #include <string>
-static int selectedOption = 0;
+
 
 void GuiManager::render()
 {
@@ -65,11 +65,19 @@ void GuiManager::render()
 
 	ImGui::PushFont(robotoFontRegular);
 
-	ImGui::RadioButton("Spawner", &selectedOption,0);
+	ImGui::RadioButton("Spawner", &m_state,MouseState::Spawner);
 	ImGui::SameLine();
-	ImGui::RadioButton("Attraction" , &selectedOption,1);
+	ImGui::RadioButton("Attraction" , &m_state, MouseState::Attraction);
 	ImGui::SameLine();
-	ImGui::RadioButton("Repulsion", &selectedOption,2);
+	ImGui::RadioButton("Repulsion", &m_state, MouseState::Repulsion);
+
+	if (m_state == MouseState::Attraction || m_state== MouseState::Repulsion)
+	{
+		ImGui::SliderFloat("Force Radius", &m_forceRadius, forceMinRadius, forceMaxRadius);
+		ImGui::SliderFloat("Force Strength", &m_forceStrength, forceStrengthMin, forceStrengthMax);
+
+
+	}
 
 	ImGui::PopFont();
 	
@@ -93,4 +101,13 @@ float GuiManager::getBallRadius() const
 glm::vec2 GuiManager::getGravity() const
 {
 	return m_gravityDirection * m_gravityForce * 100.0f;
+}
+int GuiManager::getMouseState()const {
+	return m_state;
+}
+float GuiManager::getForceRadius()const {
+	return m_forceRadius;
+}
+float GuiManager::getForceStrength()const {
+	return m_forceStrength;
 }

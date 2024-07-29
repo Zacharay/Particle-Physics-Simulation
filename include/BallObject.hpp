@@ -29,6 +29,6 @@ public:
 	void moveByVector(glm::vec2 moveVector);
 
 	void setCurrentPosition(glm::vec2 position);
-	bool isKinematic()const;
+
 
 };

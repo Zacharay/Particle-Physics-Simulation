@@ -8,6 +8,12 @@
 const static float minGravity = 0.0f;
 const static float maxGravity = 20.0f;
 
+const static float forceMinRadius = 100.0f;
+const static float forceMaxRadius = SIMULATION_WIDTH / 2;
+
+const static float forceStrengthMin = 5.0f;
+const static float forceStrengthMax = 20.0f;
+
 // colorPicker flags
 static ImGuiColorEditFlags colorEditFlags =
 ImGuiColorEditFlags_NoSmallPreview |
@@ -24,6 +30,11 @@ enum GravityDirection {
 	TOP,
 	RIGHT
 };
+enum MouseState {
+	Spawner = 0,
+	Attraction = 1,
+	Repulsion = -1
+};
 
 class GuiManager {
 private:
@@ -31,8 +42,14 @@ private:
 	glm::vec4 m_ballColor = glm::vec4(0.0f, 0.2f,1.0f, 1.0f);
 	float m_ballRadius = 10;
 	float m_gravityForce = 5.0f;
+
+	float m_forceRadius = 400.0f;
+	float m_forceStrength = 20.0f;
+
 	glm::vec2 m_gravityDirection = glm::vec2(0.0f, -1.0f);
 
+
+	int m_state = MouseState::Spawner;
 
 public:
 	GuiManager() {};
@@ -42,5 +59,7 @@ public:
 	glm::vec3 getBallColor()const;
 	float getBallRadius()const;
 	glm::vec2 getGravity()const;
-
+	int getMouseState()const;
+	float getForceRadius()const;
+	float getForceStrength()const;
 };

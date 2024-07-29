@@ -10,17 +10,17 @@ PhysicsSolver::PhysicsSolver()
 	ptr_grid = std::make_unique<UniformGrid>(c_gridCellSize);
 
 	this->objects.reserve(MAX_OBJECTS);
-	glm::vec2 spawnerPos = glm::vec2(400.0f + float(0 * 20.0f), 200.0f);
+	glm::vec2 spawnerPos = glm::vec2(400.0f + float(0 * 20.0f), 400.0f);
 	this->objects.emplace_back(std::make_shared<BallObject>(spawnerPos, spawnerPos, m_ballColor, m_ballRadius, false));
 
 	for (int i = 1; i < 20; i++)
 	{
-		glm::vec2 spawnerPos = glm::vec2(400.0f + float(i*20.0f), 200.0f);
+		glm::vec2 spawnerPos = glm::vec2(400.0f + float(i*20.0f), 400.0f);
 		this->objects.emplace_back(std::make_shared<BallObject>(spawnerPos, spawnerPos, m_ballColor, m_ballRadius, true));
 	}
 
-	spawnerPos = glm::vec2(400.0f + float(20 * 20.0f), 200.0f);
-	this->objects.emplace_back(std::make_shared<BallObject>(spawnerPos, spawnerPos, m_ballColor, m_ballRadius, false));
+	spawnerPos = glm::vec2(400.0f + float(20 * 20.0f), 400.0f);
+	this->objects.emplace_back(std::make_shared<BallObject>(spawnerPos, spawnerPos, m_ballColor, m_ballRadius, true));
 
 	for (int i = 0; i <= 19; i++)
 	{
@@ -70,19 +70,18 @@ void PhysicsSolver::updateSticks()
 {
 	for (std::unique_ptr<Link>& link : links)
 	{
-		glm::vec2 currentAxis = link->object1->getCurrentPosition() - link->object2->getCurrentPosition();
+		glm::vec2 axisBetweenObjects = link->object1->getCurrentPosition() - link->object2->getCurrentPosition();
 
-		float currentDistance = glm::length(currentAxis);
+		float currentDistance = glm::length(axisBetweenObjects);
 		
 
 		float scalar = (currentDistance - link->desiredLength) / 2;
 
-		currentAxis = glm::normalize(currentAxis);
+		axisBetweenObjects = glm::normalize(axisBetweenObjects);
 
-		if(link->object1->isKinematic())
-			link->object1->moveByVector(-currentAxis * scalar);
-		if (link->object2->isKinematic())
-			link->object2->moveByVector(currentAxis * scalar);
+		link->object1->moveByVector(-axisBetweenObjects * scalar);
+		
+		link->object2->moveByVector(axisBetweenObjects * scalar);
 
 	}
 }
@@ -93,8 +92,25 @@ void PhysicsSolver::applyGravity()
 	{
 		obj->accelerate(m_gravity);
 
-	}
+		if (m_isForceModeEnabled)
+		{
+			glm::vec2 currentAxis = m_forceOrigin - obj->getCurrentPosition();
 
+
+			float dist = glm::length(currentAxis);
+
+			if (dist > m_forceRadius) continue;
+
+			currentAxis = glm::normalize(currentAxis);
+
+			float scalar = m_forceStrength*100.0f * static_cast<float>(m_forceMode);
+
+			obj->accelerate(currentAxis* scalar);
+
+		}
+
+	}
+	
 }
 void PhysicsSolver::applyConstrains()
 {
@@ -169,11 +185,8 @@ void PhysicsSolver::resolveCollision(BallObject& ballObj1, BallObject& ballObj2)
 
 	glm::vec2 displacement = halfOverlap * normalizedCollisionAxis;
 
-
-	if(ballObj1.isKinematic())
-		ballObj1.setCurrentPosition(position1 - displacement);
-	if (ballObj2.isKinematic())
-		ballObj2.setCurrentPosition(position2 + displacement);
+	ballObj1.moveByVector(-displacement);
+	ballObj2.moveByVector(displacement);
 }
 
 
@@ -196,4 +209,24 @@ void PhysicsSolver::setRadius(float radius)
 void PhysicsSolver::setColor(glm::vec3 color)
 {
 	m_ballColor = color;
+}
+
+void PhysicsSolver::setAttraction(bool isAttractionEnabled, glm::vec2 attractionPos)
+{
+	m_isForceModeEnabled = isAttractionEnabled;
+	m_forceOrigin = attractionPos;
+}
+void PhysicsSolver::setForceMode(int forceMode)
+{
+	m_forceMode = forceMode;
+}
+
+void PhysicsSolver::setForceRadius(float forceRadius)
+{
+	m_forceRadius = forceRadius;
+}
+
+void PhysicsSolver::setForceStrength(float forceStrength)
+{
+	m_forceStrength = forceStrength;
 }
