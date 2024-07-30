@@ -25,7 +25,6 @@ class PhysicsSolver{
 	unsigned int m_substeps = 4;
 
 	glm::vec2 m_gravity = glm::vec2(0.0f, -2000.0f);
-	glm::vec3 m_ballColor = glm::vec3(0.0f,0.0f,0.0f);
 	float m_ballRadius = 10.0f;
 
 
@@ -35,6 +34,7 @@ class PhysicsSolver{
 	bool m_isForceModeEnabled = false;
 	glm::vec2 m_forceOrigin = glm::vec2(0.0f, 0.0f);
 
+	
 
 	std::unique_ptr<UniformGrid> ptr_grid;
 	std::vector<std::unique_ptr<Link>> links;
@@ -50,7 +50,7 @@ class PhysicsSolver{
 	
 public:
 	
-	void spawnObject(float xPos, float yPos);
+	void spawnObject(float xPos, float yPos,glm::vec3 ballColor);
 	std::vector<std::shared_ptr<BallObject>>objects;
 	PhysicsSolver();
 	void applyPhysics(float dt);
@@ -59,7 +59,6 @@ public:
 
 	void setGravity(glm::vec2 gravity);
 	void setRadius(float radius);
-	void setColor(glm::vec3 color);
 	void setAttraction(bool isAttractionEnabled, glm::vec2 attractionPos);
 	void setForceMode(int forceMode);
 	void setForceRadius(float forceRadius);

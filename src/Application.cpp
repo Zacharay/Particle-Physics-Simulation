@@ -1,6 +1,27 @@
 #include "Application.hpp"
 #include <math.h>
 
+glm::vec3 hsvToRgb(float h, float s, float v) {
+	float r, g, b;
+	int i = int(h * 6);
+	float f = h * 6 - i;
+	float p = v * (1 - s);
+	float q = v * (1 - f * s);
+	float t = v * (1 - (1 - f) * s);
+
+	switch (i % 6) {
+	case 0: r = v, g = t, b = p; break;
+	case 1: r = q, g = v, b = p; break;
+	case 2: r = p, g = v, b = t; break;
+	case 3: r = p, g = q, b = v; break;
+	case 4: r = t, g = p, b = v; break;
+	case 5: r = v, g = p, b = q; break;
+	}
+	return glm::vec3(r, g, b);
+}
+
+
+
 static bool isLeftMouseButtonPressed = false;
 
 Application::Application() :Window(SIMULATION_WIDTH, SIMULATION_HEIGHT, "Particle Physics Simulation")
@@ -69,7 +90,6 @@ void Application::processEvents()
 
 void Application::updatePhysicsSolver()
 {
-	ptr_physicsSolver->setColor(ptr_guiManager->getBallColor());
 	ptr_physicsSolver->setGravity(ptr_guiManager->getGravity());
 	ptr_physicsSolver->setRadius(ptr_guiManager->getBallRadius());
 	ptr_physicsSolver->setForceMode(ptr_guiManager->getMouseState());
@@ -103,7 +123,18 @@ void Application::processMouseEvents()
 
 			if (xPos > SIMULATION_WIDTH)return;
 
-			this->ptr_physicsSolver->spawnObject(xPos, SIMULATION_HEIGHT - yPos);
+			glm::vec3 color = this->ptr_guiManager->getBallColor();
+			if (this->ptr_guiManager->getColorMode() == ColorPickerState::Rainbow)
+			{
+				float t = float(this->ptr_physicsSolver->objects.size() % 360) / 360.0f;
+				color = hsvToRgb(t, 1.0f, 1.0f);
+			}
+			
+			
+			
+
+
+			this->ptr_physicsSolver->spawnObject(xPos, SIMULATION_HEIGHT - yPos, color);
 		}
 	}
 	else if (ptr_guiManager->getMouseState() == MouseState::Attraction || ptr_guiManager->getMouseState() == MouseState::Repulsion)

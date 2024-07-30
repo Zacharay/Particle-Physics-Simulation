@@ -35,6 +35,10 @@ enum MouseState {
 	Attraction = 1,
 	Repulsion = -1
 };
+enum ColorPickerState {
+	Standard,
+	Rainbow
+};
 
 class GuiManager {
 private:
@@ -48,8 +52,8 @@ private:
 
 	glm::vec2 m_gravityDirection = glm::vec2(0.0f, -1.0f);
 
-
-	int m_state = MouseState::Spawner;
+	int m_colorPickerState = ColorPickerState::Rainbow;
+	int m_mouseState = MouseState::Spawner;
 
 public:
 	GuiManager() {};
@@ -62,4 +66,5 @@ public:
 	int getMouseState()const;
 	float getForceRadius()const;
 	float getForceStrength()const;
+	int getColorMode()const;
 };

@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <thread>
+#include "PhysicsSolver.hpp"
+
 
 
 
@@ -11,16 +13,16 @@ PhysicsSolver::PhysicsSolver()
 
 	this->objects.reserve(MAX_OBJECTS);
 	glm::vec2 spawnerPos = glm::vec2(400.0f + float(0 * 20.0f), 400.0f);
-	this->objects.emplace_back(std::make_shared<BallObject>(spawnerPos, spawnerPos, m_ballColor, m_ballRadius, false));
+	this->objects.emplace_back(std::make_shared<BallObject>(spawnerPos, spawnerPos, glm::vec3(0.0f,0.0f,0.0f), m_ballRadius, false));
 
 	for (int i = 1; i < 20; i++)
 	{
 		glm::vec2 spawnerPos = glm::vec2(400.0f + float(i*20.0f), 400.0f);
-		this->objects.emplace_back(std::make_shared<BallObject>(spawnerPos, spawnerPos, m_ballColor, m_ballRadius, true));
+		this->objects.emplace_back(std::make_shared<BallObject>(spawnerPos, spawnerPos, glm::vec3(0.0f, 0.0f, 0.0f), m_ballRadius, true));
 	}
 
 	spawnerPos = glm::vec2(400.0f + float(20 * 20.0f), 400.0f);
-	this->objects.emplace_back(std::make_shared<BallObject>(spawnerPos, spawnerPos, m_ballColor, m_ballRadius, true));
+	this->objects.emplace_back(std::make_shared<BallObject>(spawnerPos, spawnerPos, glm::vec3(0.0f, 0.0f, 0.0f), m_ballRadius, true));
 
 	for (int i = 0; i <= 19; i++)
 	{
@@ -31,11 +33,13 @@ PhysicsSolver::PhysicsSolver()
 	
 }
 
-void PhysicsSolver::spawnObject(float xPos, float yPos)
+void PhysicsSolver::spawnObject(float xPos, float yPos,glm::vec3 ballColor)
 {
+
 	
+
 	glm::vec2 spawnerPos = glm::vec2(xPos, yPos);
-	this->objects.emplace_back(std::make_shared<BallObject>(spawnerPos, spawnerPos, m_ballColor, m_ballRadius));
+	this->objects.emplace_back(std::make_shared<BallObject>(spawnerPos, spawnerPos, ballColor, m_ballRadius));
 }
 void PhysicsSolver::applyPhysics(float dt)
 {
@@ -206,10 +210,6 @@ void PhysicsSolver::setRadius(float radius)
 	m_ballRadius = radius;
 }
 
-void PhysicsSolver::setColor(glm::vec3 color)
-{
-	m_ballColor = color;
-}
 
 void PhysicsSolver::setAttraction(bool isAttractionEnabled, glm::vec2 attractionPos)
 {

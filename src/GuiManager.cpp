@@ -32,9 +32,16 @@ void GuiManager::render()
 
 
 	ImGui::PushFont(robotoFontRegular);
-	ImGui::Text("Color");
-	ImGui::ColorPicker4("Color", (float*)&m_ballColor, colorEditFlags);
-	ImGui::Dummy(ImVec2(0.0f, 20.0f));
+	ImGui::RadioButton("Color Picker", &m_colorPickerState, ColorPickerState::Standard);
+	ImGui::SameLine();
+	ImGui::RadioButton("Rainbow Mode", &m_colorPickerState, ColorPickerState::Rainbow);
+	if (m_colorPickerState==ColorPickerState::Standard)
+	{
+		ImGui::Text("Color");
+		ImGui::ColorPicker4("Color", (float*)&m_ballColor, colorEditFlags);
+		ImGui::Dummy(ImVec2(0.0f, 20.0f));
+	}
+
 
 	ImGui::Text("Radius");
 	ImGui::SliderFloat("##radius", &m_ballRadius, 10.0f, 20.0f);
@@ -65,13 +72,13 @@ void GuiManager::render()
 
 	ImGui::PushFont(robotoFontRegular);
 
-	ImGui::RadioButton("Spawner", &m_state,MouseState::Spawner);
+	ImGui::RadioButton("Spawner", &m_mouseState,MouseState::Spawner);
 	ImGui::SameLine();
-	ImGui::RadioButton("Attraction" , &m_state, MouseState::Attraction);
+	ImGui::RadioButton("Attraction" , &m_mouseState, MouseState::Attraction);
 	ImGui::SameLine();
-	ImGui::RadioButton("Repulsion", &m_state, MouseState::Repulsion);
+	ImGui::RadioButton("Repulsion", &m_mouseState, MouseState::Repulsion);
 
-	if (m_state == MouseState::Attraction || m_state== MouseState::Repulsion)
+	if (m_mouseState == MouseState::Attraction || m_mouseState == MouseState::Repulsion)
 	{
 		ImGui::SliderFloat("Force Radius", &m_forceRadius, forceMinRadius, forceMaxRadius);
 		ImGui::SliderFloat("Force Strength", &m_forceStrength, forceStrengthMin, forceStrengthMax);
@@ -103,11 +110,14 @@ glm::vec2 GuiManager::getGravity() const
 	return m_gravityDirection * m_gravityForce * 100.0f;
 }
 int GuiManager::getMouseState()const {
-	return m_state;
+	return m_mouseState;
 }
 float GuiManager::getForceRadius()const {
 	return m_forceRadius;
 }
 float GuiManager::getForceStrength()const {
 	return m_forceStrength;
+}
+int GuiManager::getColorMode()const {
+	return m_colorPickerState;
 }
