@@ -12,17 +12,17 @@ PhysicsSolver::PhysicsSolver()
 	ptr_grid = std::make_unique<UniformGrid>(c_gridCellSize);
 
 	this->objects.reserve(MAX_OBJECTS);
-	glm::vec2 spawnerPos = glm::vec2(400.0f + float(0 * 20.0f), 400.0f);
+	glm::vec2 spawnerPos = glm::vec2(200.0f + float(0 * 20.0f), 400.0f);
 	this->objects.emplace_back(std::make_shared<BallObject>(spawnerPos, spawnerPos, glm::vec3(0.0f,0.0f,0.0f), m_ballRadius, false));
 
 	for (int i = 1; i < 20; i++)
 	{
-		glm::vec2 spawnerPos = glm::vec2(400.0f + float(i*20.0f), 400.0f);
+		glm::vec2 spawnerPos = glm::vec2(200.0f + float(i*20.0f), 400.0f);
 		this->objects.emplace_back(std::make_shared<BallObject>(spawnerPos, spawnerPos, glm::vec3(0.0f, 0.0f, 0.0f), m_ballRadius, true));
 	}
 
-	spawnerPos = glm::vec2(400.0f + float(20 * 20.0f), 400.0f);
-	this->objects.emplace_back(std::make_shared<BallObject>(spawnerPos, spawnerPos, glm::vec3(0.0f, 0.0f, 0.0f), m_ballRadius, true));
+	spawnerPos = glm::vec2(200.0f + float(20 * 20.0f), 400.0f);
+	this->objects.emplace_back(std::make_shared<BallObject>(spawnerPos, spawnerPos, glm::vec3(0.0f, 0.0f, 0.0f), m_ballRadius, false));
 
 	for (int i = 0; i <= 19; i++)
 	{
@@ -35,11 +35,66 @@ PhysicsSolver::PhysicsSolver()
 
 void PhysicsSolver::spawnObject(float xPos, float yPos,glm::vec3 ballColor)
 {
+	
+	glm::vec2 spawnerPos = glm::vec2(xPos, yPos);
+
+	this->objects.emplace_back(std::make_shared<BallObject>(spawnerPos, spawnerPos, ballColor, m_ballRadius));
+	
+
+	
+}
+void PhysicsSolver::spawnCube(float xPos, float yPos, glm::vec3 color)
+{
+	const int cubeSize = 7;
 
 	
 
-	glm::vec2 spawnerPos = glm::vec2(xPos, yPos);
-	this->objects.emplace_back(std::make_shared<BallObject>(spawnerPos, spawnerPos, ballColor, m_ballRadius));
+	
+
+	const unsigned int startIdx = this->objects.size();
+
+	const float diameter = m_ballRadius * 2;
+
+
+	const float linkLength = (diameter * sqrtf(2));
+	const float startXPos = xPos - (static_cast<float>(cubeSize / 2) * m_ballRadius * 2);
+	const float startYPos = yPos + (static_cast<float>(cubeSize / 2) * m_ballRadius * 2);
+
+	for (int row = 0; row < cubeSize; row++)
+	{
+		for (int col = 0; col < cubeSize; col++)
+		{
+			glm::vec2 spawnerPos = glm::vec2(startXPos + col * diameter, startYPos - row * diameter);
+
+			this->objects.emplace_back(std::make_shared<BallObject>(spawnerPos, spawnerPos, color, m_ballRadius, true));
+
+			const int currentIndex = startIdx + (row * cubeSize) +  col;
+
+
+
+			if (col != 0)
+			{
+				this->links.emplace_back(std::make_unique<Link>(this->objects[currentIndex], this->objects[currentIndex - 1], diameter));
+			}
+
+			if (row != 0)
+			{
+				
+				this->links.emplace_back(std::make_unique<Link>(this->objects[currentIndex], this->objects[currentIndex - cubeSize], diameter));
+			}
+			if (col != 0 && row != 0)
+			{
+				
+				this->links.emplace_back(std::make_unique<Link>(this->objects[currentIndex], this->objects[currentIndex - cubeSize -1 ], linkLength));
+			}
+			if (row != 0 && col != cubeSize - 1)
+			{
+				
+				this->links.emplace_back(std::make_unique<Link>(this->objects[currentIndex], this->objects[currentIndex - cubeSize + 1], linkLength));
+			}
+		}
+	}
+	
 }
 void PhysicsSolver::applyPhysics(float dt)
 {

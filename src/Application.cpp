@@ -49,9 +49,11 @@ void Application::onUpdate()
 	deltaTime = std::min(1.0f / FRAMES_PER_SECOND, deltaTime);
 	m_accumulator += deltaTime;
 	
-	if (m_accumulator > c_fixedSpawnRate && ptr_physicsSolver->objects.size()<=MAX_OBJECTS)
+	float spawnDelay = static_cast<float>(ptr_guiManager->getSpawnSpeed()) / 100.0f;
+
+	if (m_accumulator > spawnDelay && ptr_physicsSolver->objects.size() <= MAX_OBJECTS)
 	{
-		m_accumulator -= c_fixedSpawnRate;
+		m_accumulator -= spawnDelay;
 		processMouseEvents();
 		
 	}
@@ -116,7 +118,7 @@ void Application::processMouseEvents()
 
 	if (ptr_guiManager->getMouseState() == MouseState::Spawner)
 	{
-		if (isLeftMouseButtonPressed)
+		if (isLeftMouseButtonPressed && ptr_guiManager->getSpawnObjectType() == SpawningObject::Particle)
 		{
 			double xPos, yPos;
 			glfwGetCursorPos(this->window, &xPos, &yPos);
@@ -135,6 +137,20 @@ void Application::processMouseEvents()
 
 
 			this->ptr_physicsSolver->spawnObject(xPos, SIMULATION_HEIGHT - yPos, color);
+		}
+		else if (isLeftMouseButtonPressed && ptr_guiManager->getSpawnObjectType() == SpawningObject::Cube)
+		{
+			double xPos, yPos;
+			glfwGetCursorPos(this->window, &xPos, &yPos);
+
+			glm::vec3 color = this->ptr_guiManager->getBallColor();
+
+			if (xPos > SIMULATION_WIDTH)return;
+
+			this->ptr_physicsSolver->spawnCube(xPos, SIMULATION_HEIGHT - yPos, color);
+
+			//disable constant spawning on mouse hold
+			isLeftMouseButtonPressed = false;
 		}
 	}
 	else if (ptr_guiManager->getMouseState() == MouseState::Attraction || ptr_guiManager->getMouseState() == MouseState::Repulsion)

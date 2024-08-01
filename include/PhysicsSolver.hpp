@@ -51,6 +51,8 @@ class PhysicsSolver{
 public:
 	
 	void spawnObject(float xPos, float yPos,glm::vec3 ballColor);
+	void spawnCube(float xPos, float yPos, glm::vec3 color);
+
 	std::vector<std::shared_ptr<BallObject>>objects;
 	PhysicsSolver();
 	void applyPhysics(float dt);

@@ -72,17 +72,42 @@ void GuiManager::render()
 
 	ImGui::PushFont(robotoFontRegular);
 
-	ImGui::RadioButton("Spawner", &m_mouseState,MouseState::Spawner);
+	
+
+
+	ImGui::RadioButton("Spawn", &m_mouseState,MouseState::Spawner);
 	ImGui::SameLine();
 	ImGui::RadioButton("Attraction" , &m_mouseState, MouseState::Attraction);
 	ImGui::SameLine();
 	ImGui::RadioButton("Repulsion", &m_mouseState, MouseState::Repulsion);
+
+	ImGui::Dummy(ImVec2(0.0f, 10.0f));
 
 	if (m_mouseState == MouseState::Attraction || m_mouseState == MouseState::Repulsion)
 	{
 		ImGui::SliderFloat("Force Radius", &m_forceRadius, forceMinRadius, forceMaxRadius);
 		ImGui::SliderFloat("Force Strength", &m_forceStrength, forceStrengthMin, forceStrengthMax);
 
+
+	}
+	else if (m_mouseState == MouseState::Spawner)
+	{
+		ImGui::Text("Spawn Speed");
+		ImGui::RadioButton("Slow", &m_spawnSpeed, SpawnSpeed::Slow);
+		ImGui::SameLine();
+		ImGui::RadioButton("Normal", &m_spawnSpeed, SpawnSpeed::Normal);
+		ImGui::SameLine();
+		ImGui::RadioButton("Fast", &m_spawnSpeed, SpawnSpeed::Fast);
+		
+		ImGui::Dummy(ImVec2(0.0f, 5.0f));
+		ImGui::Text("Type of object");
+		ImGui::RadioButton("Particle", &m_objectType, SpawningObject::Particle);
+		ImGui::SameLine();
+		ImGui::RadioButton("Cube", &m_objectType, SpawningObject::Cube);
+		ImGui::SameLine();
+		ImGui::RadioButton("Rope", &m_objectType, SpawningObject::Rope);
+		ImGui::SameLine();
+		ImGui::RadioButton("Bridge", &m_objectType, SpawningObject::Bridge);
 
 	}
 
@@ -120,4 +145,10 @@ float GuiManager::getForceStrength()const {
 }
 int GuiManager::getColorMode()const {
 	return m_colorPickerState;
+}
+int GuiManager::getSpawnObjectType()const {
+	return m_objectType;
+}
+int GuiManager::getSpawnSpeed()const {
+	return m_spawnSpeed;
 }

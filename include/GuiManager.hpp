@@ -40,6 +40,19 @@ enum ColorPickerState {
 	Rainbow
 };
 
+enum SpawnSpeed {
+	Fast = 1,
+	Normal = 3,
+	Slow = 5
+};
+
+enum SpawningObject {
+	Particle,
+	Cube,
+	Rope,
+	Bridge
+};
+
 class GuiManager {
 private:
 
@@ -55,6 +68,8 @@ private:
 	int m_colorPickerState = ColorPickerState::Rainbow;
 	int m_mouseState = MouseState::Spawner;
 
+	int m_spawnSpeed =3;
+	int m_objectType = SpawningObject::Particle;
 public:
 	GuiManager() {};
 	void render();
@@ -67,4 +82,6 @@ public:
 	float getForceRadius()const;
 	float getForceStrength()const;
 	int getColorMode()const;
+	int getSpawnObjectType()const;
+	int getSpawnSpeed()const;
 };
