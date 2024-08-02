@@ -3,7 +3,7 @@
 #include "Globals.hpp"
 
 struct GridCell {
-	std::vector<unsigned int>objects;
+	std::vector<unsigned int>m_particles;
 };
 
 class UniformGrid {

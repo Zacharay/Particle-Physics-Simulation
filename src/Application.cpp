@@ -27,7 +27,7 @@ static bool isLeftMouseButtonPressed = false;
 Application::Application() :Window(SIMULATION_WIDTH, SIMULATION_HEIGHT, "Particle Physics Simulation")
 {
 	
-	ptr_ballRenderer = std::make_unique<BallRenderer>();
+	ptr_ballRenderer = std::make_unique<ParticleRenderer>();
 	ptr_physicsSolver = std::make_unique<PhysicsSolver>();
 	ptr_textRenderer = std::make_unique<TextRenderer>();
 	ptr_guiManager = std::make_unique<GuiManager>();
@@ -51,14 +51,12 @@ void Application::onUpdate()
 	
 	float spawnDelay = static_cast<float>(ptr_guiManager->getSpawnSpeed()) / 100.0f;
 
-	if (m_accumulator > spawnDelay && ptr_physicsSolver->objects.size() <= MAX_OBJECTS)
+	if (m_accumulator > spawnDelay && ptr_physicsSolver->m_particles.size() <= MAX_OBJECTS)
 	{
 		m_accumulator -= spawnDelay;
 		processMouseEvents();
 		
 	}
-	
-
 	updatePhysicsSolver();
 	ptr_physicsSolver->applyPhysics(deltaTime);
 
@@ -69,9 +67,9 @@ void Application::onRender()
 	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
-	ptr_ballRenderer->DrawBalls(ptr_physicsSolver->objects);
+	ptr_ballRenderer->DrawParticles(ptr_physicsSolver->m_particles);
 
-	const std::string objectStr = "Objects: " + std::to_string(this->ptr_physicsSolver->objects.size());
+	const std::string objectStr = "Objects: " + std::to_string(this->ptr_physicsSolver->m_particles.size());
 	ptr_textRenderer->DrawText(objectStr,10, SIMULATION_HEIGHT-40);
 
 	unsigned int collsionChecks = ptr_physicsSolver->getCollisionChecks();
@@ -108,7 +106,6 @@ void Application::mouseButtonCallback(GLFWwindow* window, int button, int action
 		}
 		else if (action == GLFW_RELEASE) {
 			isLeftMouseButtonPressed = false;
-
 		}
 	}
 
@@ -118,32 +115,28 @@ void Application::processMouseEvents()
 
 	if (ptr_guiManager->getMouseState() == MouseState::Spawner)
 	{
-		if (isLeftMouseButtonPressed && ptr_guiManager->getSpawnObjectType() == SpawningObject::Particle)
+		if (isLeftMouseButtonPressed && ptr_guiManager->getSpawnObjectType() == SpawningObject::ParticleObj)
 		{
 			double xPos, yPos;
 			glfwGetCursorPos(this->window, &xPos, &yPos);
 
 			if (xPos > SIMULATION_WIDTH)return;
 
-			glm::vec3 color = this->ptr_guiManager->getBallColor();
+			glm::vec3 color = this->ptr_guiManager->getParticleColor();
 			if (this->ptr_guiManager->getColorMode() == ColorPickerState::Rainbow)
 			{
-				float t = float(this->ptr_physicsSolver->objects.size() % 360) / 360.0f;
+				float t = float(this->ptr_physicsSolver->m_particles.size() % 360) / 360.0f;
 				color = hsvToRgb(t, 1.0f, 1.0f);
 			}
-			
-			
-			
 
-
-			this->ptr_physicsSolver->spawnObject(xPos, SIMULATION_HEIGHT - yPos, color);
+			this->ptr_physicsSolver->spawnParticle(xPos, SIMULATION_HEIGHT - yPos, color);
 		}
 		else if (isLeftMouseButtonPressed && ptr_guiManager->getSpawnObjectType() == SpawningObject::Cube)
 		{
 			double xPos, yPos;
 			glfwGetCursorPos(this->window, &xPos, &yPos);
 
-			glm::vec3 color = this->ptr_guiManager->getBallColor();
+			glm::vec3 color = this->ptr_guiManager->getParticleColor();
 
 			if (xPos > SIMULATION_WIDTH)return;
 

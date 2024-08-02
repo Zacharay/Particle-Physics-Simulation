@@ -38,7 +38,7 @@ void GuiManager::render()
 	if (m_colorPickerState==ColorPickerState::Standard)
 	{
 		ImGui::Text("Color");
-		ImGui::ColorPicker4("Color", (float*)&m_ballColor, colorEditFlags);
+		ImGui::ColorPicker4("Color", (float*)&m_particleColor, colorEditFlags);
 		ImGui::Dummy(ImVec2(0.0f, 20.0f));
 	}
 
@@ -101,7 +101,7 @@ void GuiManager::render()
 		
 		ImGui::Dummy(ImVec2(0.0f, 5.0f));
 		ImGui::Text("Type of object");
-		ImGui::RadioButton("Particle", &m_objectType, SpawningObject::Particle);
+		ImGui::RadioButton("Particle", &m_objectType, SpawningObject::ParticleObj);
 		ImGui::SameLine();
 		ImGui::RadioButton("Cube", &m_objectType, SpawningObject::Cube);
 		ImGui::SameLine();
@@ -120,9 +120,9 @@ void GuiManager::render()
 	ImGui::End(); 
 }
 
-glm::vec3 GuiManager::getBallColor() const
+glm::vec3 GuiManager::getParticleColor() const
 {
-	return glm::vec3(m_ballColor.x, m_ballColor.y, m_ballColor.z);
+	return glm::vec3(m_particleColor.x, m_particleColor.y, m_particleColor.z);
 }
 
 float GuiManager::getBallRadius() const

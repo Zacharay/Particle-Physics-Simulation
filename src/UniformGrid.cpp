@@ -26,7 +26,7 @@ void UniformGrid::clearGrid()
 
 	for (GridCell &cell : this->m_cells)
 	{
-		cell.objects.clear();
+		cell.m_particles.clear();
 	}
 
 }
@@ -38,12 +38,12 @@ void UniformGrid::addItem(float posX, float posY, unsigned int objID)
 
 	unsigned int cellID =getCellID(row, col);
 
-	m_cells[cellID].objects.push_back(objID);
+	m_cells[cellID].m_particles.push_back(objID);
 }
 
 std::vector<unsigned int> UniformGrid::getCellItems(unsigned int cellID)const 
 {
-	return m_cells[cellID].objects;
+	return m_cells[cellID].m_particles;
 }
 
 unsigned int UniformGrid::getNumOfCells() const
@@ -104,7 +104,7 @@ void UniformGrid::getNeighbours(unsigned int cellID,std::vector<unsigned int> &n
 	{
 		int newCellID = cellID + direction;
 
-		for (auto elementID : this->m_cells[newCellID].objects)
+		for (auto elementID : this->m_cells[newCellID].m_particles)
 		{
 			nbr.push_back(elementID);
 		}

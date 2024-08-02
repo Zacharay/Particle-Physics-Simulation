@@ -19,7 +19,7 @@ Window::Window(unsigned int width, unsigned int height, const char* windowName)
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
         std::cout << "Failed to initialize GLAD" << std::endl;
-        // TODO: Add some assertion right here
+        
     }
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 

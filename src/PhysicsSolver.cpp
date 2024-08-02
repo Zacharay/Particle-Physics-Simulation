@@ -11,34 +11,34 @@ PhysicsSolver::PhysicsSolver()
 {
 	ptr_grid = std::make_unique<UniformGrid>(c_gridCellSize);
 
-	this->objects.reserve(MAX_OBJECTS);
+	this->m_particles.reserve(MAX_OBJECTS);
 	glm::vec2 spawnerPos = glm::vec2(200.0f + float(0 * 20.0f), 400.0f);
-	this->objects.emplace_back(std::make_shared<BallObject>(spawnerPos, spawnerPos, glm::vec3(0.0f,0.0f,0.0f), m_ballRadius, false));
+	this->m_particles.emplace_back(std::make_shared<Particle>(spawnerPos, spawnerPos, glm::vec3(0.0f,0.0f,0.0f), m_ballRadius, false));
 
 	for (int i = 1; i < 20; i++)
 	{
 		glm::vec2 spawnerPos = glm::vec2(200.0f + float(i*20.0f), 400.0f);
-		this->objects.emplace_back(std::make_shared<BallObject>(spawnerPos, spawnerPos, glm::vec3(0.0f, 0.0f, 0.0f), m_ballRadius, true));
+		this->m_particles.emplace_back(std::make_shared<Particle>(spawnerPos, spawnerPos, glm::vec3(0.0f, 0.0f, 0.0f), m_ballRadius, true));
 	}
 
 	spawnerPos = glm::vec2(200.0f + float(20 * 20.0f), 400.0f);
-	this->objects.emplace_back(std::make_shared<BallObject>(spawnerPos, spawnerPos, glm::vec3(0.0f, 0.0f, 0.0f), m_ballRadius, false));
+	this->m_particles.emplace_back(std::make_shared<Particle>(spawnerPos, spawnerPos, glm::vec3(0.0f, 0.0f, 0.0f), m_ballRadius, false));
 
 	for (int i = 0; i <= 19; i++)
 	{
-		links.emplace_back(std::make_unique<Link>(this->objects[i], this->objects[i+1], 20));
+		links.emplace_back(std::make_unique<Link>(this->m_particles[i], this->m_particles[i+1], 20));
 	}
 
 
 	
 }
 
-void PhysicsSolver::spawnObject(float xPos, float yPos,glm::vec3 ballColor)
+void PhysicsSolver::spawnParticle(float xPos, float yPos,glm::vec3 ballColor)
 {
 	
 	glm::vec2 spawnerPos = glm::vec2(xPos, yPos);
 
-	this->objects.emplace_back(std::make_shared<BallObject>(spawnerPos, spawnerPos, ballColor, m_ballRadius));
+	this->m_particles.emplace_back(std::make_shared<Particle>(spawnerPos, spawnerPos, ballColor, m_ballRadius));
 	
 
 	
@@ -46,15 +46,9 @@ void PhysicsSolver::spawnObject(float xPos, float yPos,glm::vec3 ballColor)
 void PhysicsSolver::spawnCube(float xPos, float yPos, glm::vec3 color)
 {
 	const int cubeSize = 7;
-
-	
-
-	
-
-	const unsigned int startIdx = this->objects.size();
+	const unsigned int startIdx = this->m_particles.size();
 
 	const float diameter = m_ballRadius * 2;
-
 
 	const float linkLength = (diameter * sqrtf(2));
 	const float startXPos = xPos - (static_cast<float>(cubeSize / 2) * m_ballRadius * 2);
@@ -66,7 +60,7 @@ void PhysicsSolver::spawnCube(float xPos, float yPos, glm::vec3 color)
 		{
 			glm::vec2 spawnerPos = glm::vec2(startXPos + col * diameter, startYPos - row * diameter);
 
-			this->objects.emplace_back(std::make_shared<BallObject>(spawnerPos, spawnerPos, color, m_ballRadius, true));
+			this->m_particles.emplace_back(std::make_shared<Particle>(spawnerPos, spawnerPos, color, m_ballRadius, true));
 
 			const int currentIndex = startIdx + (row * cubeSize) +  col;
 
@@ -74,23 +68,23 @@ void PhysicsSolver::spawnCube(float xPos, float yPos, glm::vec3 color)
 
 			if (col != 0)
 			{
-				this->links.emplace_back(std::make_unique<Link>(this->objects[currentIndex], this->objects[currentIndex - 1], diameter));
+				this->links.emplace_back(std::make_unique<Link>(this->m_particles[currentIndex], this->m_particles[currentIndex - 1], diameter));
 			}
 
 			if (row != 0)
 			{
 				
-				this->links.emplace_back(std::make_unique<Link>(this->objects[currentIndex], this->objects[currentIndex - cubeSize], diameter));
+				this->links.emplace_back(std::make_unique<Link>(this->m_particles[currentIndex], this->m_particles[currentIndex - cubeSize], diameter));
 			}
 			if (col != 0 && row != 0)
 			{
 				
-				this->links.emplace_back(std::make_unique<Link>(this->objects[currentIndex], this->objects[currentIndex - cubeSize -1 ], linkLength));
+				this->links.emplace_back(std::make_unique<Link>(this->m_particles[currentIndex], this->m_particles[currentIndex - cubeSize -1 ], linkLength));
 			}
 			if (row != 0 && col != cubeSize - 1)
 			{
 				
-				this->links.emplace_back(std::make_unique<Link>(this->objects[currentIndex], this->objects[currentIndex - cubeSize + 1], linkLength));
+				this->links.emplace_back(std::make_unique<Link>(this->m_particles[currentIndex], this->m_particles[currentIndex - cubeSize + 1], linkLength));
 			}
 		}
 	}
@@ -119,9 +113,9 @@ unsigned int PhysicsSolver::getCollisionChecks()
 }
 void PhysicsSolver::updatePositions(float dt)
 {
-	for (const std::shared_ptr<BallObject>&obj : this->objects)
+	for (const std::shared_ptr<Particle>&particle : this->m_particles)
 	{
-		obj->updatePosition(dt);
+		particle->updatePosition(dt);
 	}
 
 }
@@ -129,25 +123,25 @@ void PhysicsSolver::updateSticks()
 {
 	for (std::unique_ptr<Link>& link : links)
 	{
-		glm::vec2 axisBetweenObjects = link->object1->getCurrentPosition() - link->object2->getCurrentPosition();
+		glm::vec2 axisBetweenObjects = link->m_firstParticle->getCurrentPosition() - link->m_secondParticle->getCurrentPosition();
 
 		float currentDistance = glm::length(axisBetweenObjects);
 		
 
-		float scalar = (currentDistance - link->desiredLength) / 2;
+		float scalar = (currentDistance - link->m_desiredLength) / 2;
 
 		axisBetweenObjects = glm::normalize(axisBetweenObjects);
 
-		link->object1->moveByVector(-axisBetweenObjects * scalar);
+		link->m_firstParticle->moveByVector(-axisBetweenObjects * scalar);
 		
-		link->object2->moveByVector(axisBetweenObjects * scalar);
+		link->m_secondParticle->moveByVector(axisBetweenObjects * scalar);
 
 	}
 }
 void PhysicsSolver::applyGravity()
 {
 
-	for (const std::shared_ptr<BallObject>& obj : this->objects)
+	for (const std::shared_ptr<Particle>& obj : this->m_particles)
 	{
 		obj->accelerate(m_gravity);
 
@@ -174,7 +168,7 @@ void PhysicsSolver::applyGravity()
 void PhysicsSolver::applyConstrains()
 {
 	int idx = 0;
-	for (const std::shared_ptr<BallObject>&obj :this->objects)
+	for (const std::shared_ptr<Particle>&obj :this->m_particles)
 	{
 		obj->applyConstrains();
 		ptr_grid->addItem(obj->getCurrentPosition().x, obj->getCurrentPosition().y, idx);
@@ -195,7 +189,7 @@ void PhysicsSolver::solveCollisions()
 		for (unsigned int currentCellObjID: currentCellObjectsID)
 		{
 			
-			BallObject & currentCellObj = *this->objects[currentCellObjID];
+			Particle & currentCellObj = *this->m_particles[currentCellObjID];
 			
 
 			for (unsigned int currentCellSecondObjID : currentCellObjectsID)
@@ -203,7 +197,7 @@ void PhysicsSolver::solveCollisions()
 				if (currentCellObjID == currentCellSecondObjID)continue;
 
 
-				BallObject& currentCellSecondObj = *this->objects[currentCellSecondObjID];
+				Particle& currentCellSecondObj = *this->m_particles[currentCellSecondObjID];
 				
 				currentCollisions++;
 				
@@ -211,7 +205,7 @@ void PhysicsSolver::solveCollisions()
 			}
 			for (unsigned int nbrID:neighboursObjectsID)
 			{
-				BallObject& nbrObj = *this->objects[nbrID];
+				Particle& nbrObj = *this->m_particles[nbrID];
 				
 				currentCollisions++;
 				resolveCollision(currentCellObj, nbrObj);
@@ -224,7 +218,7 @@ void PhysicsSolver::solveCollisions()
 	m_collisionChecks = currentCollisions;
 
 }
-void PhysicsSolver::resolveCollision(BallObject& ballObj1, BallObject& ballObj2)
+void PhysicsSolver::resolveCollision(Particle & ballObj1, Particle & ballObj2)
 {
 	glm::vec2 position1 = ballObj1.getCurrentPosition();
 	glm::vec2 position2 = ballObj2.getCurrentPosition();
@@ -251,7 +245,7 @@ void PhysicsSolver::resolveCollision(BallObject& ballObj1, BallObject& ballObj2)
 
 void PhysicsSolver::resetSimulationState()
 {
-	this->objects.clear();
+	this->m_particles.clear();
 	ptr_grid->clearGrid();
 }
 

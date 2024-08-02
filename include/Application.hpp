@@ -1,7 +1,7 @@
 #pragma once
-#include "BallRenderer.hpp"
+#include "ParticleRenderer.hpp"
 #include "Globals.hpp"
-#include "BallObject.hpp"
+#include "Particle.hpp"
 #include "PhysicsSolver.hpp"
 #include "Window.hpp"
 #include <iostream>
@@ -18,7 +18,7 @@ class Application :
 	public Window{
 private:
 
-	std::unique_ptr<BallRenderer> ptr_ballRenderer;
+	std::unique_ptr<ParticleRenderer> ptr_ballRenderer;
 	std::unique_ptr<PhysicsSolver> ptr_physicsSolver;
 	std::unique_ptr<TextRenderer> ptr_textRenderer;
 	std::unique_ptr<GuiManager> ptr_guiManager;

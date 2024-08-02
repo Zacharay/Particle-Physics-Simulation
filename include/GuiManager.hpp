@@ -47,7 +47,7 @@ enum SpawnSpeed {
 };
 
 enum SpawningObject {
-	Particle,
+	ParticleObj,
 	Cube,
 	Rope,
 	Bridge
@@ -56,7 +56,7 @@ enum SpawningObject {
 class GuiManager {
 private:
 
-	glm::vec4 m_ballColor = glm::vec4(0.0f, 0.2f,1.0f, 1.0f);
+	glm::vec4 m_particleColor = glm::vec4(0.0f, 0.2f,1.0f, 1.0f);
 	float m_ballRadius = 10;
 	float m_gravityForce = 5.0f;
 
@@ -69,13 +69,13 @@ private:
 	int m_mouseState = MouseState::Spawner;
 
 	int m_spawnSpeed =3;
-	int m_objectType = SpawningObject::Particle;
+	int m_objectType = SpawningObject::ParticleObj;
 public:
 	GuiManager() {};
 	void render();
 	void update();
 
-	glm::vec3 getBallColor()const;
+	glm::vec3 getParticleColor()const;
 	float getBallRadius()const;
 	glm::vec2 getGravity()const;
 	int getMouseState()const;

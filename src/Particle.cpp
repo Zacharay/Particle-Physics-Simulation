@@ -1,24 +1,25 @@
-#include "BallObject.hpp"
+#include "Particle.hpp"
 
-BallObject::BallObject():m_radius(10.0f), m_isKinematic(true)
-{
-	m_currentPosition = glm::vec2(400.0f, 400.0f);
-	m_previousPosition = glm::vec2(400.0f, 400.0f);
-	m_acceleration = glm::vec2(0.0f, 0.0f);
-	m_ballColor = glm::vec3(1.0f, 1.0f, 1.0f);
+Particle::Particle()
+	:	
+	m_particleColor(1.0f, 1.0f, 1.0f), 
+	m_acceleration(0.0f, 0.0f),
+	m_radius(10.0f), 
+	m_isKinematic(true),
+	m_currentPosition(400.0f,400.0f),
+	m_previousPosition(400.0f,400.0f){}
 
-}
-BallObject::BallObject(glm::vec2 position,glm::vec2 prevPosition,glm::vec3 color,float radius,bool isKinematic):m_radius(radius), m_isKinematic(isKinematic)
-{
-	this->m_currentPosition = position;
-	this->m_previousPosition = prevPosition;
-	m_acceleration = glm::vec2(0.0f, 0.0f);
+Particle::Particle(glm::vec2 position,glm::vec2 prevPosition,glm::vec3 color,float radius,bool isKinematic)
+	:
+	m_particleColor(color),
+	m_acceleration(0.0f, 0.0f),
+	m_radius(radius),
+	m_isKinematic(isKinematic),
+	m_currentPosition(position),
+	m_previousPosition(prevPosition) {}
 
-	m_ballColor = color;
 
-}
-
-void BallObject::updatePosition(float dt)
+void Particle::updatePosition(float dt)
 {
 	
 	if (!m_isKinematic)return;
@@ -32,12 +33,12 @@ void BallObject::updatePosition(float dt)
 	m_acceleration = glm::vec2(0.0f, 0.0f);
 }
 
-void BallObject::accelerate(glm::vec2 acc)
+void Particle::accelerate(glm::vec2 acc)
 {
 	m_acceleration += acc;;
 }
 
-void BallObject::applyConstrains() {
+void Particle::applyConstrains() {
 	
 	
 
@@ -67,27 +68,27 @@ void BallObject::applyConstrains() {
 	}
 }
 
-glm::vec2 BallObject::getCurrentPosition()const
+glm::vec2 Particle::getCurrentPosition()const
 {
 	return m_currentPosition;
 }
-void BallObject::setCurrentPosition(glm::vec2 position)
+void Particle::setCurrentPosition(glm::vec2 position)
 {
 	if (!m_isKinematic)return;
 
 	m_currentPosition = position;
 }
 
-float BallObject::getRadius() const
+float Particle::getRadius() const
 {
 	return m_radius;
 }
 
-glm::vec3 BallObject::getBallColor() const
+glm::vec3 Particle::getParticleColor() const
 {
-	return m_ballColor;
+	return m_particleColor;
 }
-void BallObject::moveByVector(glm::vec2 moveVector)
+void Particle::moveByVector(glm::vec2 moveVector)
 {
 	if (!m_isKinematic)return;
 	

@@ -1,9 +1,9 @@
-#include "BallRenderer.hpp"
+#include "ParticleRenderer.hpp"
 #include "glad/glad.h"
 #include <iostream>
 #include "Globals.hpp"
 
-BallRenderer::BallRenderer()
+ParticleRenderer::ParticleRenderer()
 {
 
 	this->InitializeVertices();
@@ -24,35 +24,38 @@ BallRenderer::BallRenderer()
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
 	glEnableVertexAttribArray(0);
 	glfwSwapInterval(1);
-	shader = new Shader("res/shaders/ballVertexShader.vs", "res/shaders/ballFragmentShader.fs");
+	shader = new Shader("res/shaders/particleVertexShader.vs", "res/shaders/particleFragmentShader.fs");
 	
 }
-BallRenderer::~BallRenderer()
+ParticleRenderer::~ParticleRenderer()
 {
 	glDeleteVertexArrays(1, &this->VAO);
 	glDeleteBuffers(1, &this->VBO);
 }
-void BallRenderer::DrawBalls(const std::vector<std::shared_ptr<BallObject>>& objects)const
+void ParticleRenderer::DrawParticles(const std::vector<std::shared_ptr<Particle>>& m_particles)const
 {
 	
 	
-	const size_t objectCount = objects.size();
+	const size_t objectCount = m_particles.size();
 
 	std::vector<glm::mat4> modelMatrices(objectCount);
 	std::vector<glm::vec3> colors(objectCount);
 
 	for (int i = 0; i < objectCount; i++)
 	{
-		const BallObject& obj = *objects[i];
+		const Particle& obj = *m_particles[i];
 
 		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(obj.getCurrentPosition(), 0.0f));
 		model = glm::scale(model, glm::vec3(obj.getRadius()));
 		modelMatrices[i] = model;
 
-		colors[i] = obj.getBallColor();
+		colors[i] = glm::vec3(obj.getParticleColor());
 
 	}
+
+	std::size_t vec4Size = sizeof(glm::vec4);
+
 
 	glBindVertexArray(this->VAO);
 	unsigned int colorBuffer;
@@ -72,7 +75,7 @@ void BallRenderer::DrawBalls(const std::vector<std::shared_ptr<BallObject>>& obj
 
 
 	
-	std::size_t vec4Size = sizeof(glm::vec4);
+	
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)0);
 
@@ -94,7 +97,6 @@ void BallRenderer::DrawBalls(const std::vector<std::shared_ptr<BallObject>>& obj
 
 	shader->useProgram();
 	shader->setMat4(projection, "projection");
-	shader->setVec3(glm::vec3(1.0f, 1.0f, 1.0f), "uniColor");
 
 	
 
@@ -104,7 +106,7 @@ void BallRenderer::DrawBalls(const std::vector<std::shared_ptr<BallObject>>& obj
 	glDeleteBuffers(1, &colorBuffer); 
 
 }
-void BallRenderer::InitializeVertices()
+void ParticleRenderer::InitializeVertices()
 {
 	float radius = 1.0f;
 	unsigned int vCount = 36;

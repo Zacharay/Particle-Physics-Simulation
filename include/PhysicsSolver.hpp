@@ -1,5 +1,5 @@
 #pragma once
-#include "BallObject.hpp"
+#include "Particle.hpp"
 #include <vector>
 #include "Globals.hpp"
 #include "UniformGrid.hpp"
@@ -9,14 +9,16 @@
 
 
 struct Link {
-	std::shared_ptr<BallObject> object1;
-	std::shared_ptr<BallObject>  object2;
-	float desiredLength;
+	std::shared_ptr<Particle> m_firstParticle;
+	std::shared_ptr<Particle>  m_secondParticle;
+	float m_desiredLength;
 
-	Link(std::shared_ptr<BallObject>obj1, std::shared_ptr<BallObject>obj2, float length) :
-		object1(obj1),
-		object2(obj2),
-		desiredLength(length) {};
+	 
+
+	Link(std::shared_ptr<Particle>firstParticle, std::shared_ptr<Particle>secondParticle, float length) :
+		m_firstParticle(firstParticle),
+		m_secondParticle(secondParticle),
+		m_desiredLength(length) {};
 };
 
 class PhysicsSolver{
@@ -46,14 +48,14 @@ class PhysicsSolver{
 	void updateSticks();
 	void updatePositions(float dt);
 	void solveCollisions();
-	void resolveCollision(BallObject& ballObj1, BallObject& ballObj2);
+	void resolveCollision(Particle& ballObj1, Particle& ballObj2);
 	
 public:
 	
-	void spawnObject(float xPos, float yPos,glm::vec3 ballColor);
+	void spawnParticle(float xPos, float yPos,glm::vec3 ballColor);
 	void spawnCube(float xPos, float yPos, glm::vec3 color);
 
-	std::vector<std::shared_ptr<BallObject>>objects;
+	std::vector<std::shared_ptr<Particle>>m_particles;
 	PhysicsSolver();
 	void applyPhysics(float dt);
 	unsigned int getCollisionChecks();
