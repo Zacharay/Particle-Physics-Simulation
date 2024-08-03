@@ -23,6 +23,8 @@ Window::Window(unsigned int width, unsigned int height, const char* windowName)
     }
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
+
+
     glViewport(0, 0, width, height);
 }
 
