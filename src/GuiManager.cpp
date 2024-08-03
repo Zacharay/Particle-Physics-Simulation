@@ -44,7 +44,7 @@ void GuiManager::render()
 
 
 	ImGui::Text("Radius");
-	ImGui::SliderFloat("##radius", &m_ballRadius, 10.0f, 20.0f);
+	ImGui::SliderFloat("##radius", &m_ballRadius, 5.0f, 10.0f);
 	ImGui::PopFont();
 
 	ImGui::Dummy(ImVec2(0.0f, 10.0f));

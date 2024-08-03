@@ -12,36 +12,28 @@ PhysicsSolver::PhysicsSolver()
 	ptr_grid = std::make_unique<UniformGrid>(c_gridCellSize);
 
 	this->m_particles.reserve(MAX_OBJECTS);
-	glm::vec2 spawnerPos = glm::vec2(200.0f + float(0 * 20.0f), 400.0f);
-	this->m_particles.emplace_back(std::make_shared<Particle>(spawnerPos, spawnerPos, glm::vec3(0.0f,0.0f,0.0f), m_ballRadius, false));
-
-	for (int i = 1; i < 20; i++)
-	{
-		glm::vec2 spawnerPos = glm::vec2(200.0f + float(i*20.0f), 400.0f);
-		this->m_particles.emplace_back(std::make_shared<Particle>(spawnerPos, spawnerPos, glm::vec3(0.0f, 0.0f, 0.0f), m_ballRadius, true));
-	}
-
-	spawnerPos = glm::vec2(200.0f + float(20 * 20.0f), 400.0f);
-	this->m_particles.emplace_back(std::make_shared<Particle>(spawnerPos, spawnerPos, glm::vec3(0.0f, 0.0f, 0.0f), m_ballRadius, false));
-
-	for (int i = 0; i <= 19; i++)
-	{
-		links.emplace_back(std::make_unique<Link>(this->m_particles[i], this->m_particles[i+1], 20));
-	}
-
-
 	
 }
 
-void PhysicsSolver::spawnParticle(float xPos, float yPos,glm::vec3 ballColor)
+void PhysicsSolver::spawnParticle(float xPos, float yPos,glm::vec3 ballColor,bool isKinematic)
 {
 	
 	glm::vec2 spawnerPos = glm::vec2(xPos, yPos);
 
-	this->m_particles.emplace_back(std::make_shared<Particle>(spawnerPos, spawnerPos, ballColor, m_ballRadius));
+	this->m_particles.emplace_back(std::make_shared<Particle>(spawnerPos, spawnerPos, ballColor, m_ballRadius,isKinematic));
 	
 
 	
+}
+void PhysicsSolver::spawnLinkedParticles(std::vector<std::shared_ptr<Particle>>& tempParticles)
+{
+	m_particles.push_back(tempParticles[0]);
+	for (int i = 1; i < tempParticles.size(); i++)
+	{
+		m_particles.push_back(tempParticles[i]);
+
+		links.emplace_back(std::make_unique<Link>(tempParticles[i - 1], tempParticles[i], tempParticles[i]->getRadius()*2));
+	}
 }
 void PhysicsSolver::spawnCube(float xPos, float yPos, glm::vec3 color)
 {

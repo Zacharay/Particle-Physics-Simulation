@@ -23,6 +23,8 @@ glm::vec3 hsvToRgb(float h, float s, float v) {
 
 
 static bool isLeftMouseButtonPressed = false;
+static bool spawnStaticParticle = false;
+glm::vec2 startingPos;
 
 Application::Application() :Window(SIMULATION_WIDTH, SIMULATION_HEIGHT, "Particle Physics Simulation")
 {
@@ -68,6 +70,8 @@ void Application::onRender()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	ptr_ballRenderer->DrawParticles(ptr_physicsSolver->m_particles);
+	ptr_ballRenderer->DrawParticles(temporaryParticles);
+
 
 	const std::string objectStr = "Objects: " + std::to_string(this->ptr_physicsSolver->m_particles.size());
 	ptr_textRenderer->DrawText(objectStr,10, SIMULATION_HEIGHT-40);
@@ -103,6 +107,7 @@ void Application::mouseButtonCallback(GLFWwindow* window, int button, int action
 	if (button == GLFW_MOUSE_BUTTON_LEFT) {
 		if (action == GLFW_PRESS) {
 			isLeftMouseButtonPressed = true;	
+			spawnStaticParticle = true;
 		}
 		else if (action == GLFW_RELEASE) {
 			isLeftMouseButtonPressed = false;
@@ -144,6 +149,73 @@ void Application::processMouseEvents()
 
 			//disable constant spawning on mouse hold
 			isLeftMouseButtonPressed = false;
+		}
+		else if (ptr_guiManager->getSpawnObjectType() == SpawningObject::Rope || ptr_guiManager->getSpawnObjectType() == SpawningObject::Bridge)
+		{
+			if(isLeftMouseButtonPressed)
+			{
+				double xPos, yPos;
+				glfwGetCursorPos(this->window, &xPos, &yPos);
+
+				glm::vec3 color = this->ptr_guiManager->getParticleColor();
+
+				if (xPos > SIMULATION_WIDTH)return;
+
+				if (spawnStaticParticle == true)
+				{
+					startingPos = glm::vec2(xPos, SIMULATION_HEIGHT - yPos);
+					spawnStaticParticle = false;
+					
+				}
+
+				temporaryParticles.clear();
+
+				glm::vec2 currentMousePos = glm::vec2(xPos, SIMULATION_HEIGHT - yPos);
+
+				glm::vec2 currentAxis = currentMousePos - startingPos;
+
+				float axisLength = glm::length(currentAxis);
+				float diameter = 10.0f * 2.0f;
+
+				unsigned int numOfParticles = axisLength / diameter;
+
+
+				glm::vec2 normalizedAxis = glm::normalize(currentAxis);
+
+				glm::vec2 currentParticlePos = startingPos;
+				temporaryParticles.emplace_back(std::make_shared<Particle>(currentParticlePos, currentParticlePos, glm::vec3(1.0f, 0.0f,0.0f), 10.0f, false));
+
+
+				for (int i = 1; i <= numOfParticles; i++)
+				{
+					currentParticlePos += normalizedAxis * diameter;
+
+					if (i == numOfParticles)
+					{
+						if (ptr_guiManager->getSpawnObjectType() == SpawningObject::Bridge)
+						{
+							temporaryParticles.emplace_back(std::make_shared<Particle>(currentParticlePos, currentParticlePos, glm::vec3(1.0f, 0.0f, 0.0f), 10.0f, false));
+						}
+						else {
+							temporaryParticles.emplace_back(std::make_shared<Particle>(currentParticlePos, currentParticlePos, glm::vec3(0.0f, 0.0f, 0.0f), 10.0f, true));
+						}
+						break;
+					}
+
+					temporaryParticles.emplace_back(std::make_shared<Particle>(currentParticlePos, currentParticlePos, glm::vec3(0.0f, 0.0f, 0.0f), 10.0f, true));
+
+				}
+			}
+			else {
+				if (temporaryParticles.size() > 0)
+				{
+					ptr_physicsSolver->spawnLinkedParticles(temporaryParticles);
+				}
+				temporaryParticles.clear();
+			}
+			
+			
+
 		}
 	}
 	else if (ptr_guiManager->getMouseState() == MouseState::Attraction || ptr_guiManager->getMouseState() == MouseState::Repulsion)

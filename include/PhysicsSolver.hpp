@@ -22,7 +22,7 @@ struct Link {
 };
 
 class PhysicsSolver{
-	const float c_gridCellSize = 40.0f;
+	const float c_gridCellSize = 20.0f;
 	
 	unsigned int m_substeps = 4;
 
@@ -52,7 +52,7 @@ class PhysicsSolver{
 	
 public:
 	
-	void spawnParticle(float xPos, float yPos,glm::vec3 ballColor);
+	void spawnParticle(float xPos, float yPos,glm::vec3 ballColor,bool isKinematic = true);
 	void spawnCube(float xPos, float yPos, glm::vec3 color);
 
 	std::vector<std::shared_ptr<Particle>>m_particles;
@@ -60,6 +60,7 @@ public:
 	void applyPhysics(float dt);
 	unsigned int getCollisionChecks();
 	void resetSimulationState();
+	void spawnLinkedParticles(std::vector<std::shared_ptr<Particle>> &tempParticles);
 
 	void setGravity(glm::vec2 gravity);
 	void setRadius(float radius);

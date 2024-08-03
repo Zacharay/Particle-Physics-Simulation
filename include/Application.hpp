@@ -23,6 +23,8 @@ private:
 	std::unique_ptr<TextRenderer> ptr_textRenderer;
 	std::unique_ptr<GuiManager> ptr_guiManager;
 
+	std::vector<std::shared_ptr<Particle>>temporaryParticles;
+
 	const float c_fixedSpawnRate = 0.00f;
 	float m_accumulator = 0.0f;
 	double m_lastTime;
