@@ -1,6 +1,10 @@
 # Overview
 This  application provides an interactive and visually engaging way to explore the dynamics of particle systems. It features a real-time 2D simulation where particles are influenced by gravity, collisions, and user interactions. With a range of customization options available through an intuitive GUI, users can tweak various parameters to observe different behaviors and effects.
+
+[Watch the video](https://www.youtube.com/watch?v=X-4--j24Db4)
+
 ![Preview screenshot](screenshot.png)
+
 # Key Features
 - **Real-time 2D Particle Physics Simulation:** Simulates particles affected by gravity and collisions.
 - **Verlet Integration:** Utilizes Verlet integration for stable and accurate physics simulation.
